@@ -1,1 +1,132 @@
+name: Build WebView APK
 
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+    - name: Create Android Project Structure
+      run: |
+        mkdir -p my-android-app/app/src/main/assets
+        mkdir -p my-android-app/app/src/main/java/com/example/webapp
+        mkdir -p my-android-app/app/src/main/res/values
+        mkdir -p my-android-app/app/src/main/res/mipmap-hdpi
+
+        # የድር ፋይሎቻችንን ወደ assets ፎልደር መቅዳት
+        cp -r index.html style.css script.js my-android-app/app/src/main/assets/ 2>/dev/null || cp index.html my-android-app/app/src/main/assets/
+
+        # AndroidManifest.xml መፍጠር
+        cat << 'EOF' > my-android-app/app/src/main/AndroidManifest.xml
+        <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+            package="com.example.webapp">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application
+                android:allowBackup="true"
+                android:icon="@mipmap/ic_launcher"
+                android:label="My App"
+                android:roundIcon="@mipmap/ic_launcher_round"
+                android:supportsRtl="true"
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+                <activity
+                    android:name=".MainActivity"
+                    android:exported="true">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN" />
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+                </activity>
+            </application>
+        </manifest>
+        EOF
+
+        # MainActivity.java መፍጠር (WebView የሚጭን)
+        cat << 'EOF' > my-android-app/app/src/main/java/com/example/webapp/MainActivity.java
+        package com.example.webapp;
+        import android.os.Bundle;
+        import android.webkit.WebView;
+        import androidx.appcompat.app.AppCompatActivity;
+
+        public class MainActivity extends AppCompatActivity {
+            @Override
+            protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+                WebView webView = new WebView(this);
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.loadUrl("file:///android_asset/index.html");
+                setContentView(webView);
+            }
+        }
+        EOF
+
+        # build.gradle ፋይሎችን ማዘጋጀት
+        cat << 'EOF' > my-android-app/build.gradle
+        buildscript {
+            repositories {
+                google()
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:7.4.2'
+            }
+        }
+        allprojects {
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+        EOF
+
+        cat << 'EOF' > my-android-app/settings.gradle
+        rootProject.name = "MyWebApp"
+        include ':app'
+        EOF
+
+        cat << 'EOF' > my-android-app/app/build.gradle
+        plugins {
+            id 'com.android.application'
+        }
+        android {
+            namespace 'com.example.webapp'
+            compileSdk 33
+            defaultConfig {
+                applicationId "com.example.webapp"
+                minSdk 21
+                targetSdk 33
+                versionCode 1
+                versionName "1.0"
+            }
+        }
+        dependencies {
+            implementation 'androidx.appcompat:appCompat:1.6.1'
+        }
+        EOF
+
+        # gradle wrapper ማዘጋጀት
+        cd my-android-app
+        gradle wrapper
+
+    - name: Build APK with Gradle
+      run: |
+        cd my-android-app
+        chmod +x gradlew
+        ./gradlew assembleDebug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: webview-apk
+        path: my-android-app/app/build/outputs/apk/debug/app-debug.apk
