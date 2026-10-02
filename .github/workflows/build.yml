@@ -14,9 +14,9 @@ jobs:
 
     - name: Setup Java JDK
       uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
+      with:
+        distribution: 'zulu'
+        java-version: '17'
 
     - name: Create Android Project Structure
       run: |
@@ -52,7 +52,7 @@ jobs:
         </manifest>
         EOF
 
-        # MainActivity.java መፍጠር (WebView የሚጭን)
+        # MainActivity.java መፍጠር
         cat << 'EOF' > my-android-app/app/src/main/java/com/example/webapp/MainActivity.java
         package com.example.webapp;
         import android.os.Bundle;
