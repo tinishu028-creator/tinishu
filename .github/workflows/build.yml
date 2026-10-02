@@ -71,24 +71,34 @@ jobs:
         }
         EOF
 
-        # build.gradle ፋይሎችን ማዘጋጀት (Updated for AGP 8.1.1)
-        cat << 'EOF' > my-android-app/build.gradle
-        plugins {
-            id 'com.android.application' version '8.1.1' apply false
+        # settings.gradle ፋይል (pluginManagement የያዘ)
+        cat << 'EOF' > my-android-app/settings.gradle
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
         }
-        allprojects {
+        dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
             repositories {
                 google()
                 mavenCentral()
             }
         }
-        EOF
-
-        cat << 'EOF' > my-android-app/settings.gradle
         rootProject.name = "MyWebApp"
         include ':app'
         EOF
 
+        # build.gradle ፋይል
+        cat << 'EOF' > my-android-app/build.gradle
+        plugins {
+            id 'com.android.application' version '8.1.1' apply false
+        }
+        EOF
+
+        # app/build.gradle ፋይል
         cat << 'EOF' > my-android-app/app/build.gradle
         plugins {
             id 'com.android.application'
@@ -109,9 +119,9 @@ jobs:
         }
         EOF
 
-        # gradle wrapper ማዘጋጀት (Gradle 8.0)
+        # gradle wrapper ማዘጋጀት (Gradle 8.5)
         cd my-android-app
-        gradle wrapper --gradle-version 8.0
+        gradle wrapper --gradle-version 8.5
 
     - name: Build APK with Gradle
       run: |
