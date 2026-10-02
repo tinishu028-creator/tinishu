@@ -71,16 +71,10 @@ jobs:
         }
         EOF
 
-        # build.gradle ፋይሎችን ማዘጋጀት
+        # build.gradle ፋይሎችን ማዘጋጀት (Updated for AGP 8.1.1)
         cat << 'EOF' > my-android-app/build.gradle
-        buildscript {
-            repositories {
-                google()
-                mavenCentral()
-            }
-            dependencies {
-                classpath 'com.android.tools.build:gradle:7.4.2'
-            }
+        plugins {
+            id 'com.android.application' version '8.1.1' apply false
         }
         allprojects {
             repositories {
@@ -101,11 +95,11 @@ jobs:
         }
         android {
             namespace 'com.example.webapp'
-            compileSdk 33
+            compileSdk 34
             defaultConfig {
                 applicationId "com.example.webapp"
                 minSdk 21
-                targetSdk 33
+                targetSdk 34
                 versionCode 1
                 versionName "1.0"
             }
@@ -115,9 +109,9 @@ jobs:
         }
         EOF
 
-        # gradle wrapper ማዘጋጀት
+        # gradle wrapper ማዘጋጀት (Gradle 8.0)
         cd my-android-app
-        gradle wrapper
+        gradle wrapper --gradle-version 8.0
 
     - name: Build APK with Gradle
       run: |
