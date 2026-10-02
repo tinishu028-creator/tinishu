@@ -3,520 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TINISHU APOL - Comparative Theology</title>
+    <title>TINISHU APOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --cine-yellow: #FFD700;
-            --cine-yellow-glow: rgba(255, 215, 0, 0.4);
-            --cine-dark: #050505;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--cine-dark);
-            color: #e0e0e0;
-            margin: 0;
-            padding: 0;
+            background-color: #050505;
+            background-image: radial-gradient(circle at center, #1a1500 0%, #000000 100%);
+            color: #d1d5db;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
+            background-attachment: fixed;
         }
-
-        .font-cinematic { font-family: 'Cinzel', serif; }
-
-        /* Cinematic Background Texture */
-        .texture-bg {
+        body::before {
+            content: "";
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, #1a1a00 0%, #000000 100%);
-            z-index: -2;
-        }
-        
-        .noise-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
             pointer-events: none;
             z-index: -1;
         }
-
-        .text-glow { text-shadow: 0 0 15px var(--cine-yellow-glow); }
-        
-        .module-card {
-            background: linear-gradient(145deg, #181818, #0a0a0a);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            transition: all 0.3s ease;
+        .text-cinematic-yellow { color: #ffcc00; text-shadow: 0 0 10px rgba(255, 204, 0, 0.3); }
+        .bg-cinematic-yellow { background-color: #ffcc00; }
+        .border-cinematic-yellow { border-color: #ffcc00; }
+        .card-bg {
+            background: linear-gradient(145deg, #121212, #0a0a0a);
+            border: 1px solid rgba(255, 204, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
-        .module-card:active { transform: scale(0.98); border-color: var(--cine-yellow); }
-        .module-card.locked { opacity: 0.5; cursor: not-allowed; border-color: #333; }
-
-        /* View Transitions */
-        .app-view { display: none; animation: fadeIn 0.3s ease-out forwards; }
-        .app-view.active { display: block; }
-        
-        .slide-view {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--cine-dark);
-            z-index: 45;
-            transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            overflow-y: auto;
-            padding-bottom: 5rem;
-        }
-        .slide-view.active { transform: translateX(0); }
-
+        .view-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .view-section.active { display: block; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .amharic-text { font-size: 1.1rem; line-height: 2.1; text-align: justify; }
-        
-        /* Custom Radio Buttons for Quiz */
-        .quiz-option input[type="radio"] { display: none; }
-        .quiz-option label {
-            display: block; padding: 12px; border: 1px solid #333; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
-        }
-        .quiz-option input[type="radio"]:checked + label {
-            background-color: rgba(255, 215, 0, 0.1); border-color: var(--cine-yellow); color: var(--cine-yellow); font-weight: bold;
-        }
-
-        ::-webkit-scrollbar { display: none; }
-        * { -ms-overflow-style: none; scrollbar-width: none; }
+        #drawer { transition: transform 0.3s ease-in-out; }
+        #overlay { transition: opacity 0.3s ease-in-out; }
+        .amharic-content p { line-height: 1.8; margin-bottom: 1rem; text-align: justify; font-size: 1.05rem; }
+        .amharic-content h3 { color: #ffcc00; font-size: 1.3rem; margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: bold; }
     </style>
 </head>
-<body class="antialiased pb-20 pt-16">
+<body class="pb-20 pt-16">
 
-    <div class="texture-bg"></div>
-    <div class="noise-overlay"></div>
-
-    <header class="fixed top-0 left-0 w-full bg-black/90 backdrop-blur-md border-b border-[#FFD700]/30 z-40 px-4 py-4 flex items-center justify-between shadow-[0_4px_20px_rgba(255,215,0,0.15)]">
-        <button onclick="toggleDrawer()" class="text-[#FFD700] p-1 focus:outline-none flex items-center justify-center">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    <!-- Top Navigation Header -->
+    <header class="fixed top-0 left-0 w-full bg-black bg-opacity-90 border-b border-yellow-600 border-opacity-30 z-40 flex justify-between items-center px-4 py-3 shadow-[0_2px_15px_rgba(255,204,0,0.1)] backdrop-blur-sm">
+        <button onclick="toggleDrawer()" class="text-cinematic-yellow text-2xl focus:outline-none">
+            <i class="fas fa-bars"></i>
         </button>
-        <h1 class="text-[#FFD700] text-xl font-black font-cinematic tracking-[0.2em] text-glow uppercase">Tinishu Apol</h1>
-        <div class="w-7"></div>
+        <h1 class="text-cinematic-yellow text-xl font-bold tracking-widest">TINISHU APOL</h1>
+        <div class="w-6"></div>
     </header>
 
-    <div id="drawer-overlay" onclick="toggleDrawer()" class="fixed inset-0 bg-black/80 z-50 hidden opacity-0 transition-opacity duration-300"></div>
-    <div id="drawer" class="fixed top-0 left-0 h-full w-72 bg-[#0a0a0a] border-r border-[#FFD700]/40 shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
-        <div class="p-8 border-b border-[#333] flex flex-col items-center">
-            <div class="w-24 h-24 rounded-full border-2 border-[#FFD700] overflow-hidden mb-4 shadow-[0_0_20px_rgba(255,215,0,0.3)]">
-                <img src="tinishu.jpg" alt="TINISHU Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/200x200/000000/FFD700?text=TINISHU'">
+    <!-- Side Drawer Menu -->
+    <div id="overlay" onclick="toggleDrawer()" class="fixed inset-0 bg-black bg-opacity-70 z-40 hidden opacity-0"></div>
+    <div id="drawer" class="fixed top-0 left-0 h-full w-64 bg-[#0a0a0a] border-r border-cinematic-yellow shadow-2xl z-50 transform -translate-x-full">
+        <div class="p-6 flex flex-col items-center border-b border-yellow-600 border-opacity-30">
+            <div class="w-24 h-24 rounded-full border-2 border-cinematic-yellow overflow-hidden mb-4 shadow-[0_0_15px_rgba(255,204,0,0.4)]">
+                <img src="tinishu.jpg" alt="Tinishu Logo" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150/000000/ffcc00?text=TINISHU'">
             </div>
-            <h2 class="text-[#FFD700] font-cinematic font-bold text-xl tracking-widest text-glow">TINISHU APOL</h2>
+            <h2 class="text-cinematic-yellow font-bold text-lg tracking-wider">TINISHU APOL</h2>
         </div>
-        <div class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-            <a href="mailto:tinishu028@gmail.com" class="flex items-center space-x-4 text-gray-300 hover:text-[#FFD700] p-3 rounded-lg transition">
-                <svg class="w-6 h-6 text-[#FFD700]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                <span class="font-medium tracking-wide">Contact Us</span>
+        <div class="p-4 flex flex-col space-y-4 mt-2">
+            <a href="mailto:tinishu028@gmail.com" class="flex items-center text-gray-300 hover:text-cinematic-yellow transition">
+                <i class="fas fa-envelope w-8 text-center text-cinematic-yellow"></i> Contact Us
             </a>
-            <a href="https://t.me/rajulalkitab" target="_blank" class="flex items-center space-x-4 text-gray-300 hover:text-[#FFD700] p-3 rounded-lg transition">
-                <svg class="w-6 h-6 text-[#FFD700]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.833.936z"/></svg>
-                <span class="font-medium tracking-wide">Telegram</span>
+            <a href="https://t.me/rajulalkitab" target="_blank" class="flex items-center text-gray-300 hover:text-cinematic-yellow transition">
+                <i class="fab fa-telegram w-8 text-center text-cinematic-yellow"></i> Telegram
             </a>
-            <a href="https://www.tiktok.com/@tinishu028" target="_blank" class="flex items-center space-x-4 text-gray-300 hover:text-[#FFD700] p-3 rounded-lg transition">
-                <svg class="w-6 h-6 text-[#FFD700]" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93v7.2c0 1.96-.5 3.96-1.7 5.48-1.38 1.73-3.5 2.81-5.76 2.97-2.45.17-5.05-.51-6.79-2.24-1.89-1.87-2.69-4.66-2.08-7.25.5-2.14 2-4 3.97-5.11 2.05-1.16 4.54-1.39 6.81-.72V12.7c-1.25-.26-2.58-.2-3.79.25-1.09.4-2.02 1.19-2.51 2.22-.5 1.05-.5 2.33-.03 3.39.46 1.04 1.39 1.83 2.47 2.16 1.25.38 2.66.25 3.8-.33 1.17-.6 1.95-1.7 2.18-2.96.11-.59.13-1.19.13-1.79V.02h3.26z"/></svg>
-                <span class="font-medium tracking-wide">TikTok</span>
+            <a href="https://www.tiktok.com/@tinishu028" target="_blank" class="flex items-center text-gray-300 hover:text-cinematic-yellow transition">
+                <i class="fab fa-tiktok w-8 text-center text-cinematic-yellow"></i> TikTok
             </a>
         </div>
     </div>
 
-    <main class="w-full max-w-2xl mx-auto px-4 py-6 relative z-10">
+    <!-- MAIN APP CONTENT -->
+    <main class="px-4">
         
-        <!-- View: Main Course List -->
-        <div id="view-main" class="app-view active">
-            <div class="mb-8 text-center">
-                <h2 class="text-xs font-cinematic tracking-[0.3em] text-[#FFD700] mb-2 uppercase">The Syllabus</h2>
-                <div class="h-px w-24 bg-gradient-to-r from-transparent via-[#FFD700]/50 to-transparent mx-auto"></div>
-            </div>
-            <div class="space-y-4">
+        <!-- View 1: Main Course List -->
+        <div id="view-main-course" class="view-section active">
+            <h2 class="text-2xl font-bold text-cinematic-yellow mb-6 mt-4 border-b border-yellow-600 border-opacity-30 pb-2">Main Course</h2>
+            <div class="flex flex-col space-y-4">
                 
                 <!-- Module 1 -->
-                <div onclick="openSlideView('view-reading')" class="module-card rounded-xl p-5 flex items-center justify-between cursor-pointer group">
-                    <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-sm bg-black border border-[#FFD700]/30 flex items-center justify-center text-[#FFD700]">
-                            <span class="font-cinematic font-bold">I</span>
-                        </div>
-                        <div>
-                            <span class="text-[10px] font-bold text-[#FFD700] uppercase tracking-widest mb-1 block">Module 1</span>
-                            <h3 class="text-lg font-bold text-white leading-tight">አእማደ ምስጢር</h3>
-                            <p class="text-xs text-gray-500 mt-1">Aemade Mistir</p>
-                        </div>
+                <div onclick="openLesson('aemade-mistir')" class="card-bg rounded-lg p-5 flex items-center justify-between cursor-pointer transform hover:scale-[1.02] transition">
+                    <div>
+                        <span class="text-xs font-bold text-cinematic-yellow uppercase tracking-wider">Module 1</span>
+                        <h3 class="text-lg font-bold text-white mt-1">አእማደ ምስጢር (Aemade Mistir)</h3>
+                        <p id="mod1-status" class="text-xs text-yellow-400 mt-1">Status: Not Completed</p>
                     </div>
-                    <svg class="w-5 h-5 text-[#FFD700] group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    <i class="fas fa-chevron-right text-cinematic-yellow"></i>
                 </div>
 
                 <!-- Module 2 -->
-                <div onclick="openSlideView('view-module2')" class="module-card rounded-xl p-5 flex items-center justify-between cursor-pointer group">
-                    <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-sm bg-black border border-[#FFD700]/30 flex items-center justify-center text-[#FFD700]">
-                            <span class="font-cinematic font-bold">II</span>
-                        </div>
-                        <div>
-                            <span class="text-[10px] font-bold text-[#FFD700] uppercase tracking-widest mb-1 block">Module 2</span>
-                            <h3 class="text-lg font-bold text-white leading-tight">Logical problem of trinity</h3>
-                            <p class="text-xs text-gray-500 mt-1">Scholarly Treatise</p>
-                        </div>
+                <div id="mod2-card" onclick="checkAndOpenModule2()" class="card-bg rounded-lg p-5 flex items-center justify-between opacity-70 cursor-pointer">
+                    <div>
+                        <span class="text-xs font-bold text-cinematic-yellow uppercase tracking-wider">Module 2</span>
+                        <h3 class="text-lg font-bold text-white mt-1">Logical problem of trinity</h3>
+                        <p id="mod2-status" class="text-xs text-gray-400 mt-1">Status: Locked (Complete Module 1 First)</p>
                     </div>
-                    <svg class="w-5 h-5 text-[#FFD700] group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    <i id="mod2-icon" class="fas fa-lock text-gray-500"></i>
                 </div>
 
-                <!-- Module 3 (Dynamic Lock Status) -->
-                <div id="mod3-card" onclick="openModule3()" class="module-card locked rounded-xl p-5 flex items-center justify-between transition duration-300">
-                    <div class="flex items-start space-x-4">
-                        <div id="mod3-icon-box" class="w-10 h-10 rounded-sm bg-black border border-[#333] flex items-center justify-center text-gray-500">
-                            <span class="font-cinematic font-bold">III</span>
-                        </div>
-                        <div>
-                            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block" id="mod3-label">Module 3 (Locked)</span>
-                            <h3 class="text-lg font-bold text-gray-300 leading-tight">Basic logic study</h3>
-                        </div>
+                <!-- Module 3 -->
+                <div id="mod3-card" onclick="checkAndOpenModule3()" class="card-bg rounded-lg p-5 flex items-center justify-between opacity-70 cursor-pointer">
+                    <div>
+                        <span class="text-xs font-bold text-cinematic-yellow uppercase tracking-wider">Module 3</span>
+                        <h3 class="text-lg font-bold text-white mt-1">Basic logic study</h3>
+                        <p id="mod3-status" class="text-xs text-gray-400 mt-1">Status: Locked (Complete Module 2 First)</p>
                     </div>
-                    <svg id="mod3-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <i id="mod3-icon" class="fas fa-lock text-gray-500"></i>
                 </div>
 
                 <!-- Module 4 -->
-                <div class="module-card locked rounded-xl p-5 flex items-center justify-between">
-                    <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-sm bg-black border border-[#333] flex items-center justify-center text-gray-500"><span class="font-cinematic font-bold">IV</span></div>
-                        <div>
-                            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Module 4 (Locked)</span>
-                            <h3 class="text-lg font-bold text-gray-300 leading-tight">Advanced logic study</h3>
-                        </div>
+                <div class="card-bg rounded-lg p-5 flex items-center justify-between opacity-70">
+                    <div>
+                        <span class="text-xs font-bold text-cinematic-yellow uppercase tracking-wider">Module 4</span>
+                        <h3 class="text-lg font-bold text-white mt-1">Advanced logic study</h3>
+                        <p class="text-xs text-gray-400 mt-1">Status: Locked</p>
                     </div>
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <i class="fas fa-lock text-gray-500"></i>
                 </div>
             </div>
         </div>
 
-        <!-- View: Video Course Placeholder -->
-        <div id="view-video" class="app-view">
-            <div class="flex flex-col items-center justify-center h-[60vh] text-center">
-                <div class="w-20 h-20 rounded-full border-2 border-[#FFD700]/30 flex items-center justify-center mb-6">
-                    <svg class="w-8 h-8 text-[#FFD700]/50 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                </div>
-                <h2 class="text-2xl font-cinematic font-bold text-[#FFD700] mb-2 tracking-widest">Video Archives</h2>
-                <p class="text-gray-500 max-w-xs mx-auto">Visual theological discourses and lectures are currently being prepared.</p>
-            </div>
+        <!-- View 2: Video Course List -->
+        <div id="view-video-course" class="view-section text-center pt-10">
+            <i class="fas fa-video text-6xl text-cinematic-yellow opacity-50 mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">Video Course</h2>
+            <p class="text-gray-400">Video lectures will be available soon.</p>
         </div>
+
+        <!-- View 3: Lesson Detail (አእማደ ምስጢር) -->
+        <div id="view-lesson-detail" class="view-section">
+            <button onclick="goBack()" class="flex items-center text-cinematic-yellow font-bold mb-4 bg-black bg-opacity-50 py-2 px-4 rounded-full border border-yellow-600 border-opacity-30 inline-block">
+                <i class="fas fa-arrow-left mr-2"></i> ወደ ኋላ ተመለስ
+            </button>
+            
+            <div class="card-bg p-5 rounded-lg amharic-content shadow-[0_0_20px_rgba(255,204,0,0.1)]">
+                <h2 class="text-2xl font-bold text-cinematic-yellow text-center mb-6 border-b border-yellow-600 border-opacity-30 pb-4"> መግቢያ</h2>
+                
+                <p>ትምህርተ ሃይማኖት ወደ እግዚአብሔር የምታደርሰውን ፍኖተ እግዚአብሔር (የእግዚአብሔር መንገድ) የምናውቅበትና ዘላለማዊ ሕይወትን የምንጎናጸፍበትን “ርትዕት ሃይማኖት” የምንገነዘብበት ነው፡፡ ሊቃውንተ ቤተክርስቲያን ትምህርተ ሃይማኖትን ዶግማ (መሠረተ እምነት) እና ቀኖና (ሥርዓተ ቤተክርስቲያን) ብለው በሁለት ይከፍሉታል፡፡ የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያን የሃይማኖት መሠረት እንደሆኑ የምታምነውና የምታስተምረው አምስቱ አዕማደ ምስጢራትን ነው፡፡ በዚህች የአስተምህሮ ጦማር የአምስቱ አዕማደ ምስጢራት- መግቢያ የመግቢያ ክፍል የሚቀርብ ሲሆን የአንዳንድ ቃላትን ትርጉም በመግለጽ እንጀምራለን፡፡</p>
+                
+                <h3>እግዚአብሔር:</h3>
+                <p>እግዚአብሔር የሚለው ቃል ከግዕዝ የተገኘ ሲሆን “እግዚእ” ማለት ጌታ ማለት ነው፡፡ “ብሔር” ማለት ደግሞ ዓለም ማለት ነው፡፡ እግዚአብሔር ማለት የዓለም ጌታ (ፈጣሪ፣ ገዥ) ማለት ነው፡፡ መጽሐፍ ቅዱስ በመጀመሪያ እግዚአብሔር እንዳለ ለማረጋገጥ አይሞክርም፡፡ የእግዚአብሔርን ህልውና መሠረት አድርጎ ይጀምራል እንጂ፡፡ ዘፍ 1፡1 እግዚአብሔር በዕብራይስጥ የሚጠራባቸው ሦስት ስሞች አሉ፡፡ እነዚህም ኤል (ኃያል አምላክ)፣ ያህዌ (ያለና የሚኖር፣ እንደ ፈቃዱ የሚሠራ) እና አዶን (ጌታ) የሚሉት ናቸው፡፡ በጽርዕ አልፋና ኦሜጋ (መጀመሪያውና መጨረሻው) ይባላል፡፡ መለኮት ማለት መላኪ(ገዥ) ማለት ነው፡፡ አምላክ ማለትም ፈጥሮ የሚገዛ ማለት ነው፡፡</p>
+                
+                <h3>እምነትና ሃይማኖት:</h3>
+                <p>እምነት የሚለው ቃል መሠረታዊ ቃሉ ግዕዝ ሲሆን ትርጓሜውም ማመን ወይም መታመን ማለት ነው፡፡ ማመን ማለት ስለእግዚአብሔር የሰሙትንና የተረዱትን እንዲሁም የተቀበሉትን ትምህርት እውነት ነው ብሎ በልብ መቀበል ነው (ሮሜ 10፡17)፡፡ መታመን ደግሞ ያመኑትንና የተቀበሉትን እምነት በሰው ፊት ሳይፈሩና ሳያፍሩ መመስከር ነው፡፡ ማቴ 10፡32 ሮሜ 10፡9 ሐዋርያው ቅዱሰ ጳውሎስ ስለ እምነት ሲናገር “እምነትም ተስፋ ስለምናደርገው ነገር የሚያስረግጥ፥ የማናየውንም ነገር የሚያስረዳ ነው።” ብሏል፡፡ ዕብ 11፡1 ያለ እምነትም እግዚአብሔርን ደስ ማሰኘት አይቻልም፡፡ ሃይማኖት ማለት ለዓለም ፈጣሪ አለው ብለው የሚያምኑት እምነት ነው፡፡ ለዓለም ፈጣሪ አለው ብለው የሚመሰክሩት ቃል ነው፡፡ ሃይማኖት ሰው ፈጣሪውን የሚያመልክበት፣ የእግዚአብሔር ልጅ የሚሆንበት፣ ጽድቅንም የሚሠራበት፣ የዘላለም ሕይወትን የሚያገኝበት መንገድ ነው፡፡ ሃይማኖትም አንዲት ናት፡፡ ኤፌ 4፡5</p>
+                
+                <h3>ዶግማና ቀኖና:</h3>
+                <p>ትምህርት ሃይማኖት (የሃይማኖት ትምህርት) በሁለት ይከፈላል፡፡ ይኸውም ዶግማና ቀኖና በሚል ነው፡፡ ዶግማ ቃሉ የግሪክ ሲሆን ፍችውም የእምነት መሠረት ማለት ነው፡፡ ዶግማ ወይም እምነት አይጨመርበትም፤ አይቀነስበትም፤ አይሻሻልም፤ ችግርና ፈተናም ቢመጣ እስከ ሞት ድረስ አጥብቀን የምንይዘው ነው፡፡ ለምሳሌ ያህል ይህን ዓለም ካለመኖር ወደ መኖር አምጥቶ የፈጠረ፤ ቢመረምር እንጂ የማይመረመር ሁሉን ቻይ አምላክ፤ የሚሳነው ነገር የሌለ ፈጣሪ፤ የሰማይና የምድር ባለቤት የሠራዊት ጌታ ሕያው እግዚአብሔር ነው፡፡ እግዚአብሔር (ፈጣሪ) የአካል ሦስትነት አለው፡፡ በመለኮት፣ በመፍጠር፣ በሥልጣን፣ በአገዛዝ፣ በፈቃድ ግን አንድ ነው፡፡ በሦስትነቱ አብ፤ ወልድ፤ መንፈስ ቅዱስ ሲባል በአንድነቱ አንድ መለኮት አንድ እግዚአብሔር ይባላል፡፡ በአዳም ምክንያት ከመጣው የዘለዓለም ሞትና ከዲያብሎስ ባርነት ነጻ የወጣነው ከሦስቱ አካላት በአንደኛው አካል ማለትም በወልድ በኢየሱስ ክርስቶስ ነው፡፡ ይህን የመሰለው መሰረታዊ ትምህርት ዶግማ ወይም መሰረተ እምነት ይባላል፡፡</p>
+                
+                <p>ቀኖና የሚለው ቃልም የግሪክ ሲሆን ሥርዓት ማለት ነው፡፡ ቀኖና በአምላካችን በኢየሱስ ክርስቶስ አምነው ያደጉ ክርስቲያኖች የሚመሩበት ሥርዓት ስለሆነ፤ በሃይማኖት አባቶች ወይም በቅዱስ ሲኖዶስ አማካኝነት እንደጊዜው ሁኔታ የሚሻሻል በመሆኑ የሚጨመርበት፤ የሚቀነስለት ነው፡፡ ለምሳሌ በቤተ ክርስቲያናችን የቀዳስያን ብዛት መነሻው አምስት ነው፡፡ ምናልባት ከአምስቱ አንዱ፤ ሁለቱ፤ ሦስቱ ቢታጡና ሌላም ተፈልጎ እስከ መጨረሻ የማይገኝ ከሆነ ከአቅም በላይም የሆነ ችግር ከገጠመ ሁለቱ ወይም አንዱ ብቻ ቀድሰው ማቁረብ ይችላሉ፡፡ 1ኛ ቆሮ. 14፥40፡፡ 2ኛተሰ. 3፥6-7 ቀኖና (ሥርዐት) የሚወሰነው በሃይማኖት አባቶች እንደሆነና ወንጌልን የሚያስተምር ሰው ለሚያስተምራቸው ክርስቲያኖች በሃይማኖት አባቶች የተወሰነ ቀኖና ማስተማርና መሰጠት እንዳለበት መጽሐፍ ቅዱስ እንዲህ ሲል ያስረዳል፡፡ “በየከተማውም ሲሄዱ፥ ሐዋርያትና ቀሳውስት በኢየሩሳሌም ያዘዙትን /የወሰኑትን/ ሥርዐት አስተማሯቸው፡፡ አብያተ ክርስቲያናትም በሃይማኖት ጸኑ ዕለት ዕለትም ቁጥራቸው ይበዛ ነበር፡፡” ሐዋ. 16፡4-5፡፡</p>
+
+                <h3>ቤተክርስቲያን፡</h3>
+                <p>እንደ ሊቃውንተ ቤተ ክርስቲያን አመሥጥሮ ቤተ ክርስቲያን ማለት እግዚአብሔር ግዕዛን ካላቸው ፍጥረታት ጋር ያለው ግንኙነት ነው፡፡ ይህም ሦስት አይነት ትርጉም አለው፡፡ ቤተክርስቲያን ማለት የክርስቲያኖች ኅብረት፡ የክርስቲያኖች አንድነት ነው (1ኛ ቆሮ 11፡28)፡፡ ቤተክርስቲያን ማለት የክርስቲያኖች መኖሪያ፡ የእግዚአብሔር ቤት ነው፡፡ “ቤት” ማለት መኖሪያ ማለት እንደሆነ ሁሉ “ቤተክርስቲያን” ማለት የክርስቲያኖች ቤት/መኖሪያ የእግዚአብሔር ቤት ማለት ነው (ዮሐ 2፡ 16)፡፡ እዚህ ላይ ህንፃ ቤተክርስቲያን ስንል አገልግሎቱንም ጭምር የሚያመለክት መሆኑ ሊሰመርበት ይገባል፡፡ በተጨማሪም ቤተክርስቲያን ሲል ምዕመናንን ነው፡፡ የእያንዳንዱን ክርስቲያን ሰውነት የሚያመላክት ነው (1ኛ ቆሮ 3፡16)፡፡ ይህም ማለት ቤተክርስቲያን ከክርስቶስ የተገኘ እንደሆነ ነው፡፡</p>
+                
+                <div class="mt-8 text-center">
+                    <button onclick="startModule1Exam()" class="bg-cinematic-yellow text-black font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-yellow-400 transition">
+                        <i class="fas fa-pen-nib mr-2"></i> አንብቤ ጨርሻለሁ ወደ ፈተና <span>(Module 1)</span> <span>ሂድ</span>
+                    </button>
+                </div>
+            </div>
+            <div class="h-10"></div>
+        </div>
+
+        <!-- Exam & Research View for Module 1 / Module 2 -->
+        <div id="view-exam-container" class="view-section">
+            <button onclick="goBack()" class="flex items-center text-cinematic-yellow font-bold mb-4 bg-black bg-opacity-50 py-2 px-4 rounded-full border border-yellow-600 border-opacity-30 inline-block">
+                <i class="fas fa-arrow-left mr-2"></i> ወደ ኋላ ተመለስ
+            </button>
+            <div class="card-bg p-6 rounded-lg">
+                <h2 id="exam-title" class="text-xl font-bold text-cinematic-yellow mb-4 border-b border-yellow-600 border-opacity-30 pb-2">ፈተና (Module 1 Exam)</h2>
+                
+                <!-- Timer / Lock info -->
+                <div id="lock-info-box" class="bg-black bg-opacity-40 p-4 rounded border border-yellow-600 border-opacity-30 mb-6 hidden">
+                    <p class="text-yellow-400 font-bold mb-2"><i class="fas fa-lock mr-2"></i>የ 24 ሰዓት እረፍት ጊዜ (Lockout Active)</p>
+                    <p id="countdown-timer" class="text-white text-lg font-mono">00:00:00</p>
+                    <p class="text-xs text-gray-400 mt-2">ቀጣዩን ፈተና ለመውሰድ የታዘዘውን 24 ሰዓት ይጠብቁ።</p>
+                    <button onclick="bypassTimer()" class="mt-3 text-xs bg-gray-800 text-yellow-400 border border-yellow-600 px-3 py-1 rounded hover:bg-gray-700">DEV: ጊዜውን ዝለል (Skip 24h)</button>
+                </div>
+
+                <div id="quiz-area">
+                    <div id="question-container" class="mb-6">
+                        <!-- Questions injected dynamically -->
+                    </div>
+                    <button id="next-quiz-btn" onclick="submitQuizBatch()" class="w-full bg-cinematic-yellow text-black font-bold py-3 rounded hover:bg-yellow-400 transition">ቀጣይ / አስገባ</button>
+                </div>
+
+                <!-- Research PDF Upload Section -->
+                <div id="research-section" class="hidden">
+                    <div class="bg-black bg-opacity-60 p-5 rounded border border-cinematic-yellow mb-4">
+                        <h3 class="text-lg font-bold text-cinematic-yellow mb-2"><i class="fas fa-graduation-cap mr-2"></i>የምርምር ፕሮጀክት ጥያቄ (Scholarly Research Paper)</h3>
+                        <p class="text-gray-300 mb-4 text-sm leading-relaxed">
+                            በአምስቱ አዕማደ ምስጢራት በተለይም በምሥጢረ ሥላሴና በምሥጢረ ሥጋዌ ዙሪያ ከነባራዊው ኑፋቄ አንፃር ጥልቅ ምሁራዊ ትንታኔ የሚያቀርብ ጽሑፍ በፒዲኤፍ (PDF) መልክ ያዘጋጁ። ጽሑፍዎ የቤተክርስቲያንን ዶግማ እና የሊቃውንቱን ትምህርት በጠንካራ ሎጂካዊ ክርክር የሚደግፍ መሆን አለበት።
+                        </p>
+                        <input type="file" id="pdf-file-input" accept=".pdf" class="w-full text-gray-300 bg-black p-2 rounded border border-gray-700 mb-4 text-sm">
+                        <button onclick="submitResearchPDF()" class="w-full bg-cinematic-yellow text-black font-bold py-3 rounded hover:bg-yellow-400 transition">
+                            <i class="fas fa-file-pdf mr-2"></i> የምርምር ፒዲኤፍ ጫንና ቀጣዩን ሞጁል ክፈት
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="h-10"></div>
+        </div>
+
+        <!-- View 4: Lesson Detail (Logical problem of trinity - Module 2) -->
+        <div id="view-module2-detail" class="view-section">
+            <button onclick="goBack()" class="flex items-center text-cinematic-yellow font-bold mb-4 bg-black bg-opacity-50 py-2 px-4 rounded-full border border-yellow-600 border-opacity-30 inline-block">
+                <i class="fas fa-arrow-left mr-2"></i> ወደ ኋላ ተመለስ
+            </button>
+            
+            <div class="card-bg p-5 rounded-lg amharic-content shadow-[0_0_20px_rgba(255,204,0,0.1)]">
+                <h2 class="text-2xl font-bold text-cinematic-yellow text-center mb-6 border-b border-yellow-600 border-opacity-30 pb-4">የሥላሴ ምስጢር ሥነ-ሎጂካዊ ችግሮችና ምሁራዊ ምላሾች (Logical Problem of the Trinity)</h2>
+                
+                <p>ይህ ሞጁል በዘመናዊ የክርክር መድረኮች እና በፍልስፍና ትንተናዎች ከሚነሱ እጅግ ከባድ የሥላሴ አስተምህሮ ሎጂካዊ ተቃርኖ ክሶች ጋር የሚመክት ምሁራዊና አполоጅቲካዊ (Apologetic) ኮርስ ነው። የክርስትና እምነት ማዕከል የሆነው የሥላሴ ምስጢር በመሠረታዊ የመደብ ሎጂክ (Classical Logic) አሠራር ሲተነተን ከሚፈጠሩ አዕምሯዊ ፈተናዎች አንፃር ጥልቅ ትንታኔ ይሰጣል።</p>
+
+                <h3>1. የሥላሴ ሎጂካዊ አውድ እና የሶስትነትና የአንድነት መሠረታዊ ጥያቄ</h3>
+                <p>ተቺዎች “አንድ አምላክ ነው እያሉ እንዴት ሦስት አካላት ናቸው ይባላል? 1 = 3 የሚለው የሂሳብና የሎጂክ ሕግን ይቃረናል” የሚል አጠቃላይ ክስ ይሰነዝራሉ። የዚህ ጥያቄ መሠረታዊ ስህተት መለኮታዊውን አካልና ባሕርይ ባለመገንዘብ ላይ የተመሰረተ ነው። በኦርቶዶክስ ተዋሕዶ ቲዎሎጂ መሠረት እግዚአብሔር በአንድነት (በባሕርይ፣ በህልውና፣ በፈቃድ) አንድ ሲሆን፣ በሦስትነት (በአካል፣ በስም፣ በግንኙነት) ሦስት ነው። ቃላቱ የሚገልጹት አንፃራዊ ልዩነትን (Relative Distinction) እንጂ ፍጹም መለያየትን አይደለም።</p>
+
+                <h3>2. የኦንቶሎጂካል ልዩነት (Ontological Distinction) እና የአካል ግንኙነት</h3>
+                <p>አብ, ወልድ እና መንፈስ ቅዱስ የተለዩ አካላት የሚባሉት በምን መልኩ ነው? አብ ወላዲ (አባት) በመሆኑ፣ ወልድ ተወላዲ (ልጅ) በመሆኑ፣ መንፈስ ቅዱስ ሰራፂ (proceeding) በመሆኑ ይለያሉ። ይህ ልዩነት በባሕርይ ክፍፍል ሳይሆን በግንኙነት ቅደም ተከተል (Relational Order) የሚታወቅ ነው። ልክ እንደ እሳት ሙቀትና ብርሃን ሁሉ መለኮታዊ ባሕርይ የማይከፈል (Indivisible) ነው።</p>
+
+                <h3>3. የቋንቋና የፅንሰ-ሀሳብ ወሰን (Semantic and Conceptual Boundaries)</h3>
+                <p>የሰብአዊ አዕምሮ ቋንቋ የተወሰነና ፍጡራዊ በመሆኑ ረቂቁን መለኮታዊ እውነት ሙሉ በሙሉ ለመግለጽ ቃላት ያንሱታል። ሊቃውንት “ምስጢር” የሚሉት ቃሉ ራሱ ምክንያታዊ ያልሆነ (irrational) ሳይሆን፣ ከሰብአዊ አዕምሮ አቅም በላይ የሆነ (trans-rational) ማለታቸው ነው። የሂሳብ ቀመር ከእግዚአብሔር ህልውና በላይ ሊሆን አይችልም፤ ምክንያቱም ሂሳብ ራሱ በፈጣሪ ጥበብ የተፈጠረ የፍጡራን መሣሪያ ነው።</p>
+
+                <h3>4. የሞዳልዝም (Modalism) እና የሰቤልዮስ ኑፋቄ ስህተት</h3>
+                <p>አንዳንድ ተቺዎች ሥላሴን ለማስታረቅ ሲሉ “አንድ አምላክ እንደየሁኔታው በአሶ ሦስት መልክ ይገለጣል” የሚለውን የሞዳልዝም ሐሳብ ያነሳሉ። ቤተክርስቲያን ይህንን በጥብቅ ታወግዛለች። አብ በዕለተ አርብ በዕጨ መصلብ ላይ አልሞተም፤ የሞተው ወልድ ብቻ ነው። አካላት እርስ በእርሳቸው የሚነጋገሩበት እና የሚዋደዱበት ዘላለማዊ ህብረት (Eternal Communion) ስላላቸው መልክ ብቻ አይደሉም፤ ሕያው አካላት ናቸው።</p>
+
+                <h3>5. የሱቦርዲኔሺያኒዝም (Subordinationism) እና የአርዮስ ክህደት</h3>
+                <p>ወልድ ከአብ ያነሰ ነው የሚለውን የፍልስፍና ክርክር ስንመረምር፣ በሥልጣንና በአባትነት እንጂ በባሕርይና በፈጣሪነት ልዩነት እንደሌለ እንረዳለን። ጌታ ኢየሱስ ክርስቶስ “አብ ከእኔ ይበልጣል” ያለው በሰውነቱ እንጂ በመለኮቱ አይደለም። መለኮታዊው አካል ፍጹም እኩል (Co-equal) እና አብሮ የፈጠረ (Co-eternal) ነው።</p>
+
+                <h3>6. የትሪቴይዝም (Tritheism) አደጋ እና የአንድነት ማዕቀፍ</h3>
+                <p>አንዳንዶች የሦስትነትን ትምህርት ሲያብራሩ በስህተት ሦስት አማልክትን (Polytheism/Tritheism) ይሰብካሉ። ኦርቶዶክሳዊት ቤተክርስቲያን ግን “ሦስት መለኮት፣ ሦስት ፈጣሪ” አትልም። ሦስትነቱ በአካል እንጂ በመለኮት አይደለም። አንዱ መለኮታዊ ባሕርይ በሦስቱ አካላት ሙሉ በሙሉ ይገለጣል እንጂ ይከፈላል ተብሎ አይታሰብም።</p>
+
+                <h3>7. የጊዜና የዘላለማዊነት ሎጂክ (Logic of Eternity)</h3>
+                <p>ፍጡራን በጊዜ (Time) እና በቦታ (Space) የተገደቡ ስንሆን፣ እግዚአብሔር ግን የዘላለም ባለቤት ነው። የሥላሴ ዘላለማዊ ትውልድና ሂደት (Eternal Generation and Procession) በጊዜ ሂደት ውስጥ የተፈጠረ ክስተት ሳይሆን ከዘላለም እስከ ዘላለም የነበረና ያለ እውነት ነው። ጊዜያዊ ስሌቶች በዘላለማዊ እውነት ላይ ተፈጻሚ ሊሆኑ አይችሉም።</p>
+
+                <h3>8. የፍልስፍና አናሎግዎችና ገደባቸው</h3>
+                <p>የሥላሴን ምስጢር ለማስረዳት ሊቃውንት የፀሐይን አካል፣ ብርሃንና ሙቀት፤ ወይም የአዕምሮን ቃል፣ አእምሮና ሕይወት ምሳሌዎች ይጠቀማሉ። እነዚህ ምሳሌዎች መለኮታዊውን ምስጢር ሙሉ በሙሉ ባይሸፍኑትም፣ አንዱ ባሕርይ እንዴት በብዙ መልኩ ሊገለጽ እንደሚችል ፍጡራዊ ማሳያ ይሰጣሉ።</p>
+
+                <h3>9. የክርስቶስ አካላዊ ውህደት (Hypostatic Union) እና የሥላሴ መስተጋብር</h3>
+                <p>በምሥጢረ ሥጋዌ የተገለጠው የእግዚአብሔር ቃል አሰራር ከሥላሴ አንድነትና ሦስትነት ጋር በቀጥታ የተያያዘ ነው። ሦስቱ አካላት በፈጠራቸው ሥራ በአንድነት ይሰራሉ፤ ነገር ግን ሰው የመሆኑ ሥራ የባህርይ ባለቤት ለሆነው ለወልድ ብቻ የተወሰነ ነው። ይህ የሥራ ክፍፍል (Economic Trinity) የባሕርይ መለያየትን አያሳይም።</p>
+
+                <h3>10. ምሁራዊ ማጠቃለያ እና ሐዋርያዊ አቋም</h3>
+                <p>በመጨረሻም የሥላሴ ምስጢር በሰው አዕምሮ ሊመረመር የማይችል፣ በታላቅ ፍርሃትና እምነት የሚቀበሉት የእግዚአብሔር ራስን መግለጥ ነው። ሎጂካዊ ተቃርኖዎች የሚከሰቱት የሰውን አእምሮ ከእግዚአብሔር ልዕልና በላይ ለማድረግ ሲሞከር ነው። ኦርቶዶክሳዊ አማኝ እምነቱን በማስተዋልና በምሁራዊ ቁም ነገር አጥብቆ ይይዛል።</p>
+                
+                <div class="mt-8 text-center">
+                    <button onclick="startModule2Exam()" class="bg-cinematic-yellow text-black font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-yellow-400 transition">
+                        <i class="fas fa-pen-nib mr-2"></i> አንብቤ ጨርሻለሁ ወደ ፈተና <span>(Module 2)</span> <span>ሂድ</span>
+                    </button>
+                </div>
+            </div>
+            <div class="h-10"></div>
+        </div>
+
+        <!-- View 5: Lesson Detail (Module 3 Placeholder) -->
+        <div id="view-module3-detail" class="view-section">
+            <button onclick="goBack()" class="flex items-center text-cinematic-yellow font-bold mb-4 bg-black bg-opacity-50 py-2 px-4 rounded-full border border-yellow-600 border-opacity-30 inline-block">
+                <i class="fas fa-arrow-left mr-2"></i> ወደ ኋላ ተመለስ
+            </button>
+            <div class="card-bg p-5 rounded-lg text-center py-12">
+                <i class="fas fa-book text-6xl text-cinematic-yellow mb-4"></i>
+                <h2 class="text-2xl font-bold text-white mb-2">Basic Logic Study (Module 3)</h2>
+                <p class="text-gray-400">እንኳን ደስ አለዎት! ሞጁል 2ን በተሳካ ሁኔታ አጠናቀዋል። ሞጁል 3 ይዘቶች በቅርቡ ይለቀቃሉ።</p>
+            </div>
+            <div class="h-10"></div>
+        </div>
+
     </main>
 
-    <!-- Slide View: Module 1 Reading -->
-    <div id="view-reading" class="slide-view">
-        <div class="texture-bg"></div>
-        <div class="noise-overlay"></div>
-        <header class="sticky top-0 bg-black/95 backdrop-blur-md border-b border-[#FFD700]/30 z-40 px-4 py-4 flex items-center justify-between">
-            <button onclick="closeSlideView('view-reading')" class="text-[#FFD700] flex items-center space-x-2 p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                <span class="text-sm font-bold tracking-widest uppercase">Back</span>
-            </button>
-            <span class="text-[#FFD700] font-cinematic font-bold text-sm tracking-widest uppercase">Module 1</span>
-        </header>
-
-        <div class="max-w-2xl mx-auto px-5 py-8 pb-32">
-            <div class="text-center mb-10">
-                <h1 class="text-2xl md:text-3xl font-bold text-[#FFD700] leading-snug">አምስቱ አዕማደ ምስጢራት- መግቢያ</h1>
-                <div class="h-px w-32 bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mx-auto mt-6"></div>
-            </div>
-
-            <!-- Full Amharic Text Preserved -->
-            <div class="amharic-text space-y-6 text-gray-300">
-                <p>ትምህርተ ሃይማኖት ወደ እግዚአብሔር የምታደርሰውን ፍኖተ እግዚአብሔር (የእግዚአብሔር መንገድ) የምናውቅበትና ዘላለማዊ ሕይወትን የምንጎናጸፍበትን “ርትዕት ሃይማኖት” የምንገነዘብበት ነው፡፡ ሊቃውንተ ቤተክርስቲያን ትምህርተ ሃይማኖትን ዶግማ (መሠረተ እምነት) እና ቀኖና (ሥርዓተ ቤተክርስቲያን) ብለው በሁለት ይከፍሉታል፡፡ የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያን የሃይማኖት መሠረት እንደሆኑ የምታምነውና የምታስተምረው አምስቱ አዕማደ ምስጢራትን ነው፡፡ በዚህች የአስተምህሮ ጦማር የአምስቱ አዕማደ ምስጢራት- መግቢያ የመግቢያ ክፍል የሚቀርብ ሲሆን የአንዳንድ ቃላትን ትርጉም በመግለጽ እንጀምራለን፡፡</p>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">እግዚአብሔር:</h3>
-                <p>እግዚአብሔር የሚለው ቃል ከግዕዝ የተገኘ ሲሆን “እግዚእ” ማለት ጌታ ማለት ነው፡፡ “ብሔር” ማለት ደግሞ ዓለም ማለት ነው፡፡ እግዚአብሔር ማለት የዓለም ጌታ (ፈጣሪ፣ ገዥ) ማለት ነው፡፡ መጽሐፍ ቅዱስ በመጀመሪያ እግዚአብሔር እንዳለ ለማረጋገጥ አይሞክርም፡፡ የእግዚአብሔርን ህልውና መሠረት አድርጎ ይጀምራል እንጂ፡፡ ዘፍ 1፡1 እግዚአብሔር በዕብራይስጥ የሚጠራባቸው ሦስት ስሞች አሉ፡፡ እነዚህም ኤል (ኃያል አምላክ)፣ ያህዌ (ያለና የሚኖር፣ እንደ ፈቃዱ የሚሠራ) እና አዶን (ጌታ) የሚሉት ናቸው፡፡ በጽርዕ አልፋና ኦሜጋ (መጀመሪያውና መጨረሻው) ይባላል፡፡ መለኮት ማለት መላኪ(ገዥ) ማለት ነው፡፡ አምላክ ማለትም ፈጥሮ የሚገዛ ማለት ነው፡፡</p>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">እምነትና ሃይማኖት:</h3>
-                <p>እምነት የሚለው ቃል መሠረታዊ ቃሉ ግዕዝ ሲሆን ትርጓሜውም ማመን ወይም መታመን ማለት ነው፡፡ ማመን ማለት ስለእግዚአብሔር የሰሙትንና የተረዱትን እንዲሁም የተቀበሉትን ትምህርት እውነት ነው ብሎ በልብ መቀበል ነው (ሮሜ 10፡17)፡፡ መታመን ደግሞ ያመኑትንና የተቀበሉትን እምነት በሰው ፊት ሳይፈሩና ሳያፍሩ መመስከር ነው፡፡ ማቴ 10፡32 ሮሜ 10፡9 ሐዋርያው ቅዱሰ ጳውሎስ ስለ እምነት ሲናገር “እምነትም ተስፋ ስለምናደርገው ነገር የሚያስረግጥ፥ የማናየውንም ነገር የሚያስረዳ ነው።” ብሏል፡፡ ዕብ 11፡1 ያለ እምነትም እግዚአብሔርን ደስ ማሰኘት አይቻልም፡፡ ሃይማኖት ማለት ለዓለም ፈጣሪ አለው ብለው የሚያምኑት እምነት ነው፡፡ ለዓለም ፈጣሪ አለው ብለው የሚመሰክሩት ቃል ነው፡፡ ሃይማኖት ሰው ፈጣሪውን የሚያመልክበት፣ የእግዚአብሔር ልጅ የሚሆንበት፣ ጽድቅንም የሚሠራበት፣ የዘላለም ሕይወት የሚያገኝበት መንገድ ነው፡፡ ሃይማኖትም አንዲት ናት፡፡ ኤፌ 4፡5</p>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">ዶግማና ቀኖና:</h3>
-                <p>ትምህርት ሃይማኖት (የሃይማኖት ትምህርት) በሁለት ይከፈላል፡፡ ይኸውም ዶግማና ቀኖና በሚል ነው፡፡ ዶግማ ቃሉ የግሪክ ሲሆን ፍችውም የእምነት መሠረት ማለት ነው፡፡ ዶግማ ወይም እምነት አይጨመርበትም፤ አይቀነስበትም፤ አይሻሻልም፤ ችግርና ፈተናም ቢመጣ እስከ ሞት ድረስ አጥብቀን የምንይዘው ነው፡፡ ለምሳሌ ያህል ይህን ዓለም ካለመኖር ወደ መኖር አምጥቶ የፈጠረ፤ ቢመረምር እንጂ የማይመረመር ሁሉን ቻይ አምላክ፤ የሚሳነው ነገር የሌለ ፈጣሪ፤ የሰማይና የምድር ባለቤት የሠራዊት ጌታ ሕያው እግዚአብሔር ነው፡፡ እግዚአብሔር (ፈጣሪ) የአካል ሦስትነት አለው፡፡ በመለኮት፣ በመፍጠር፣ በሥልጣን፣ በአገዛዝ፣ በፈቃድ ግን አንድ ነው፡፡ በሦስትነቱ አብ፤ ወልድ፤ መንፈስ ቅዱስ ሲባል በአንድነቱ አንድ መለኮት አንድ እግዚአብሔር ይባላል፡፡ በአዳም ምክንያት ከመጣው የዘለዓለም ሞትና ከዲያብሎስ ባርነት ነጻ የወጣነው ከሦስቱ አካላት በአንደኛው አካል ማለትም በወልድ በኢየሱስ ክርስቶስ ነው፡፡ ይህን የመሰለው መሰረታዊ ትምህርት ዶግማ ወይም መሰረተ እምነት ይባላል፡፡</p>
-                <p>ቀኖና የሚለው ቃልም የግሪክ ሲሆን ሥርዓት ማለት ነው፡፡ ቀኖና በአምላካችን በኢየሱስ ክርስቶስ አምነው ያደጉ ክርስቲያኖች የሚመሩበት ሥርዓት ስለሆነ፤ በሃይማኖት አባቶች ወይም በቅዱስ ሲኖዶስ አማካኝነት እንደጊዜው ሁኔታ የሚሻሻል በመሆኑ የሚጨመርበት፤ የሚቀነስለት ነው፡፡ ለምሳሌ በቤተ ክርስቲያናችን የቀዳስያን ብዛት መነሻው አምስት ነው፡፡ ምናልባት ከአምስቱ አንዱ፤ ሁለቱ፤ ሦስቱ ቢታጡና ሌላም ተፈልጎ እስከ መጨረሻ የማይገኝ ከሆነ ከአቅም በላይም የሆነ ችግር ከገጠመ ሁለቱ ወይም አንዱ ብቻ ቀድሰው ማቁረብ ይችላሉ፡፡ 1ኛ ቆሮ. 14፥40፡፡ 2ኛተሰ. 3፥6-7 ቀኖና (ሥርዐት) የሚወሰነው በሃይማኖት አባቶች እንደሆነና ወንጌልን የሚያስተምር ሰው ለሚያስተምራቸው ክርስቲያኖች በሃይማኖት አባቶች የተወሰነ ቀኖና ማስተማርና መሰጠት እንዳለበት መጽሐፍ ቅዱስ እንዲህ ሲል ያስረዳል፡፡ “በየከተማውም ሲሄዱ፥ ሐዋርያትና ቀሳውስት በኢየሩሳሌም ያዘዙትን /የወሰኑትን/ ሥርዐት አስተማሯቸው፡፡ አብያተ ክርስቲያናትም በሃይማኖት ጸኑ ዕለት ዕለትም ቁጥራቸው ይበዛ ነበር፡፡” ሐዋ. 16፥4-5፡፡</p>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">ቤተክርስቲያን፡</h3>
-                <p>እንደ ሊቃውንተ ቤተ ክርስቲያን አመሥጥሮ ቤተ ክርስቲያን ማለት እግዚአብሔር ግዕዛን ካላቸው ፍጥረታት ጋር ያለው ግንኙነት ነው፡፡ ይህም ሦስት አይነት ትርጉም አለው፡፡ ቤተክርስቲያን ማለት የክርስቲያኖች ኅብረት፡ የክርስቲያኖች አንድነት ነው (1ኛ ቆሮ 11፡28)፡፡ ቤተክርስቲያን ማለት የክርስቲያኖች መኖሪያ፡ የእግዚአብሔር ቤት ነው፡፡ “ቤት” ማለት መኖሪያ ማለት እንደሆነ ሁሉ “ቤተክርስቲያን” ማለት የክርስቲያኖች ቤት/መኖሪያ የእግዚአብሔር ቤት ማለት ነው (ዮሐ 2፡ 16)፡፡ እዚህ ላይ ህንፃ ቤተክርስቲያን ስንል አገልግሎቱንም ጭምር የሚያመለክት መሆኑ ሊሰመርበት ይገባል፡፡ በተጨማሪም ቤተክርስቲያን ሲል ምዕመናንን ነው፡፡ የእያንዳንዱን ክርስቲያን ሰውነት የሚያመላክት ነው (1ኛ ቆሮ 3፡16)፡፡ ይህም ማለት ቤተክርስቲያን ከክርስቶስ የተገኘ እንደሆነ ነው፡፡</p>
-                <p>የኦርቶዶክሳዊት ተዋሕዶ ቤተክርስቲያን የእምነትና የሃይማኖት መሠረት የሆኑት አምስቱ አዕማደ ምስጢራት ናቸው፡፡ ሃይማኖት የሚባለውም እነዚህን ምስጢራት ተቀብሎ ሁሉን ማድረግ ከሚችል ከእግዚአብሔር ጋር መኖር ነው፡፡ አምስት መሆናቸው ሐዋርያው ቅዱስ ጳውሎስ “ነገር ግን ሌሎችን ደግሞ አስተምር ዘንድ በማኅበር እልፍ ቃላት በልሳን ከመናገር ይልቅ አምስት ቃላት በአእምሮዬ ልናገር እወዳለሁ።” (1ኛቆሮ 14፡19) ያለውን መነሻ ያደረገ ሲሆን የስያሜያቸው ትንታኔ እንደሚከተለው ይቀርባል፡፡</p>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">አዕማድ ማለት ምን ማለት ነው?</h3>
-                <p>የኢትዮጵያ ኦርቶዶክስ ተዋህዶ ሃይማኖት መፍቻ ቁልፍ የግእዝ ቋንቋ እንደ መሆኑ መጠን በተለይም በቤተክርስቲያን ጥቅም ላይ የሚውሉ ቃላት ምንጫቸው ግእዝ ነው፡፡ “አዕማድ” የሚለውም ቃል መገኛው “አምድ” የሚለው የግዕዝ ቃል ነው፡፡ “አምድ” የሚለው ቃል የነጠላ ቁጥርን የሚገልፅ ሲሆን “አዕማድ” ሲሆን ደግሞ ብዙ ቁጥርን ይገልፃል፡፡ ትርጉሙም በቃላዊ ፍቺው ለቤት ሲሆን ምሰሶ ማለት ነው፡፡ ምሰሶ ቤትን ደግፎ እና አቅንቶ እንደሚይዝ ሁሉ አምስቱ አዕማደ ሚስጥራትም የኦርቶዶክስ ተዋህዶ ሃይማኖትን አቅንተውና ደግፈው ስለሚይዙ የተሰጠ ስያሜ ነው፡፡ ዐምድ ለጽሕፈትም ይውላል፡፡ የገጽ ስፋትንም በመክፈል ለንባብ መመጠኛነት ያገለግላል፡፡ በዚህ ፍቺም ባህርየ ሥላሴን ከልክ አልፈን እንዳንመረምር የተሰጠ ስያሜ ነው፡፡</p>
-                <p>አምድ በቁሙ ምሰሶ ብለን የምንጠራው እና ቤቱ እንዳይዘም ወይም ወደ አንድ ጎን እንዳያዘነብል፤ ሚዛኑን እና ልኩን ጠብቆ እንዲቆም የሚያደርግ ነው። በአምድ የተሠራ ቤት አይዛባም ያለዓምድ የተሠራ ቤት ግን ይፈርሳል አይጸናም፡፡ ቤት በአምድ (በኮለም) እንደሚጸና ሃይማኖትም በእነዚህ አዕማደ ምሥጢራት ተጠቃሎ ይገለጻል፤ ምዕመናንም እነዚህን ምሥጢራት በመማር ጸንተው ይኖራሉ።</p>
-                <p>በቅድስት ተዋህዶ ቤተክርስቲያናችን አስተምህሮ ምሰሶዎች አንድን ቤት ደግፈው እንደሚይዙት ሁሉ የኦርቶዶክስ ተዋህዶ ሃይማኖትንም ቀጥ አድርገው የሚይዙ ምሰሶዎች አምስቱ አዕማደ ምስጢራት ናቸው፡፡ የቤተክርስቲያን ሊቃውንት እንደሚያስተምሩት ከሆነ አንድ ሰው አምስቱን አዕማደ ምስጢራት በጥንቃቄ ካወቀ የኑፋቄ ማዕበል አይጥለውም፡፡ ከእምነቱም አይናወጽም፡፡ በህይወቱ የተለያዩ መከራዎች ቢመጡበትም በእነዚህ ትምህርቶች በኩል ራሱን ያፀናል፡፡</p>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">ለምን ምስጢራት ተባሉ?</h3>
-                <p>ቅድስት ቤተክርስቲያን አምስቱን አዕማድ “የምስጢር ትምህርቶች” ትላቸዋለች፡፡ “ምሥጢር” የሚለው ቃል “አመሠጠረ” ከሚለው ግስ የተገኘ ቃል ሲሆን ስውር ፣ ድብቅ ፣ ሽሽግ ማለት ነው፡፡ አምስቱ አዕማደ ምስጢራት “ምስጢር” የተባሉበት ምክንያት በሚከተሉት ሦስት ቁም ነገሮች በበለጠ ይብራራል።</p>
-                <div class="space-y-4 pl-4 border-l border-[#333]">
-                    <p><strong class="text-[#FFD700]">አንድ፡</strong> ረቂቅ እና ስውር ስለሆነው አምላክ የሚናገሩ አስተምህሮቶች ስለሆኑ ነው።</p>
-                    <p><strong class="text-[#FFD700]">ሁለት፡</strong> ትምህርቶቹን በሥጋዊ ጥበብ ለመረዳት የማይቻል በመሆኑ ነው። በአንድ ወገን ከሃይማኖታዊና መንፈሳዊ ልቦና ፈልቆ የሚናገሩት፣ በሌላው ወገን ደግሞ በመንፈሳዊ ልቦና ሆነው የሚሰሙትና የሚማሩት ረቂቅ የእግዚአብሔር ነገር ስልሆነ ነው።</p>
-                    <p><strong class="text-[#FFD700]">ሦስት፡</strong> ቤተክርስቲያን ለአማንያን ብቻ የምትነግረው እና የምታስተምረው በመሆኑ ነው።</p>
-                </div>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">አዕማደ ምስጢራት ምን ምን ናቸው?</h3>
-                <p>እነዚህም ምሥጢረ ሥላሴ (የሥላሴን አንድነትና ሦስትነት የምንማርበት)፣ ምሥጢረ ሥጋዌ (የአምላክን ሰው መሆን የምንማርበት)፣ ምሥጢረ ጥምቀት (ስለ ዳግም መወለድ የምንማርበት)፣ ምሥጢረ ቁርባን (ስለ ክርስቶስ ሥጋና ደም የምንማርበት) እና ምሥጢረ ትንሣኤ ሙታን (ስለ ዳግም ምጽዓት የምንማርበት) ናቸው።</p>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">የአዕማደ ምስጢራት መሠረት ምንድን ነው?</h3>
-                <p>አዕማደ ምስጢራት ይዘት ምንጭ የጌታና የሐዋርያት ትምህርት ነው፡፡ ይሁን እንጅ አነሳሱ በጸሎተ ሃይማኖት ወይም አባቶቻችን ምዕመናንን በትክክለኛው ሃይማኖት ለማጽናትና መናፍቃንን ድል ለመንሳት በተካሄዱ በጉባዔ ኒቂያና ጉባዔ ቁስጥንጥንያ ነው፡፡</p>
-
-                <h3 class="text-xl font-bold text-[#FFD700] mt-10 mb-3 border-l-4 border-[#FFD700] pl-3">አዕማደ ምስጢርን ማወቅ ለምን ይጠቅማል?</h3>
-                <p>አንድ ሰው በዚህ ዓለም ሲኖር አምስቱን አዕማደ ምስጢራት በሚገባ ከተማረ በሕይወቱ ምንም እንኳን ነፋሳት ቢነፍሱ ጎርፍም ቢጎርፍ ከእምነቱ ምንም ሊያናውጠው አይችልም፡፡ በአጠቃላይ አዕማደ ምስጢራትን በሚገባ ማወቅ ሃይማኖትን በሚገባ ለመረዳት፣ ከጥርጥርና ከኑፋቄ ለመጠበቅና በሃይማኖት ጸንቶ ጽድቅን ለመፈጸም ይጠቅማል፡፡</p>
-            </div>
-            
-            <button onclick="startQuizLogic()" class="w-full mt-12 bg-[#FFD700] text-black font-bold py-4 rounded-lg uppercase tracking-widest shadow-[0_0_20px_rgba(255,215,0,0.4)] hover:bg-yellow-400 transition duration-300">
-                ትምህርቱን በሚገባ አንብቤያለሁ (Start Quiz)
-            </button>
-        </div>
-    </div>
-
-    <!-- Slide View: Module 2 - Scholarly Logical Problem of Trinity (10 Massive Sections) -->
-    <div id="view-module2" class="slide-view">
-        <div class="texture-bg"></div>
-        <div class="noise-overlay"></div>
-        <header class="sticky top-0 bg-black/95 backdrop-blur-md border-b border-[#FFD700]/30 z-40 px-4 py-4 flex items-center justify-between">
-            <button onclick="closeSlideView('view-module2')" class="text-[#FFD700] flex items-center space-x-2 p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                <span class="text-sm font-bold tracking-widest uppercase">Back</span>
-            </button>
-            <span class="text-[#FFD700] font-cinematic font-bold text-sm tracking-widest uppercase">Module II</span>
-        </header>
-
-        <div class="max-w-2xl mx-auto px-5 py-8 pb-32 amharic-text text-gray-300 space-y-8">
-            <div class="text-center mb-10">
-                <span class="text-xs font-bold text-[#FFD700] uppercase tracking-widest">ሁለተኛው ኮርስ - ምሁራዊ ጥናት</span>
-                <h1 class="text-2xl md:text-3xl font-bold text-[#FFD700] mt-1 leading-snug">የሥላሴ ምስጢር ሥነ-ሎጂካዊ ችግሮችና ምሁራዊ ምላሾች (The Logical Problem of the Trinity: Scholarly Treatise)</h1>
-                <div class="h-px w-32 bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mx-auto mt-6"></div>
-            </div>
-
-            <!-- Section 1 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">1. መግቢያ፡ የሥላሴ አስተምህሮ እና የአናሊቲክ ፈላስፎች ፈተና (The Epistemological Challenge)</h3>
-                <p>በዘመናዊው የአናሊቲክ  filosofía ዎልትስ (Analytic Philosophy of Religion) ውስጥ የክርስቲያኑ የሥላሴ (Trinity) አስተምህሮ እንደ አንዱ ታላቅ “ሥነ-ሎጂካዊ ፓራዶክስ” (Logical Paradox) ይጠቀሳል። ተቃዋሚዎችና ፈላስፎች እንደሚያስተምሩት፣ “እግዚአብሔር በአንድ በኩል በቁጥር አንድ (Numerical Monism) ነው እያሉ፣ በሌላ በኩል ሦስት የተለያዩ አካላት (አብ፣ ወልድ፣ መንፈስ ቅዱስ) አሉት ማለት በስርዓተ-ሎጂክ (Law of Non-Contradiction) ሕግ መሠረት ፍጹም ግጭት (Contradiction) ነው” ይላሉ። በዚህ ምሁራዊ መጽሐፍ (Treatise) ውስጥ ይህንን ከባድ የቁጥር እና የባህርይ ጥያቄ በሥነ-መለኮት፣ በግዕዝ ፍልስፍናና በዘመናዊ የቋንቋ አመክንዮ (Semantics) እይታዎች እንመረምራለን።</p>
-            </div>
-
-            <!-- Section 2 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">2. የሂሳብና የቁጥር ስሌት ግጭት፡ 1 + 1 + 1 = 1? (The Arithmetic Paradox & Numerical Identity)</h3>
-                <p>የመጀመሪያው ዋነኛ ተቃውሞ የሚነሳው ከሂሳባዊ ስሌት ነው። በሂሳብ አሰራር መሠረት አንድ ፕላስ አንድ ፕላስ አንድ ሦስት (3) እንጂ አንድ (1) ሊሆን አይችልም። ስለዚህ ክርስቲያኖች “ሦስት አምላኮች አሉን” ማለት ሲገባቸው “አንድ አምላክ ነው” ይላሉ፤ ይህ ደግሞ በቁጥር ማንነት (Numerical Identity) ሕግ መሠረት ስህተት ነው ይባላል። ቤተክርስቲያን ግን የምታስተምረው ቁጥሩን በሁለት የተለያዩ መለኪያዎች ላይ በመመስረት ነው። መለኮታዊው <strong>“ባህርይ” (Essence/Ousia)</strong> አንድ ሲሆን፣ መለኮታዊው <strong>“አካል” (Hypostasis/Person)</strong> ሦስት ነው። አንዱን በአንድ መለኪያ (በባህርይ)፣ ሌላውን በሌላ መለኪያ (በአካል) ስንሰላ ሂሳባዊ ግጭቱ ይወገዳል።</p>
-            </div>
-
-            <!-- Section 3 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">3. የ‘ባህርይ’ (Essence) እና ‘አካል’ (Person) ጥልቅ ፍልስፍናዊ ልዩነት</h3>
-                <p>በአሪስቶትል እና በባሕታዊያን ሊቃውንት (Cappadocian Fathers) ፍልስፍና መሠረት “Ousia” (ባህርይ/ተፈጥሮ) እና “Hypostasis” (አካል/ግለሰብ) ፍጹም የተለዩ ጽንሰ-ሀሳቦች ናቸው። “ባህርይ” የሚለው ቃል “ማንነቱ ምን ይመስላል?” ለሚለው ጥያቄ መልስ ሲሰጥ (What is it?)፣ “አካል” የሚለው ቃል ደግሞ “ማነው?” ለሚለው ጥያቄ መልስ ይሰጣል (Who is it?)። በሰው ልጆች ዘንድ፡- ጴጥሮስ፣ ጳውሎስ እና ዮሐንስ ሦስት የተለያዩ ‘አካላት’ (Persons) ናቸው፤ ነገር ግን ሦስቱም አንድ አይነት የ‘ሰውነት ባህርይ’ (Human Nature) አላቸው። በሥላሴም ዘንድ አብ፣ ወልድ እና መንፈስ ቅዱስ ሦስት አካላት ሲሆኑ፣ ሦስቱም አንድ መለኮታዊ ባህርይ አላቸው። ልዩነቱ በሰዎች ዘንድ ሦስት አካላት ሦስት የተለያዩ ፈቃዶችና አእምሮዎች አሏቸው፤ በሥላሴ ዘንድ ግን ሦስቱ አካላት አንድ ፈቃድ፣ አንድ ኃይል እና አንድ እውቀት አላቸው።</p>
-            </div>
-
-            <!-- Section 4 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">4. የሶሻል ትሪኒቲዝም (Social Trinitarianism) እና  relational ontology</h3>
-                <p>በዘመናዊ ሥነ-መለኮት ውስጥ <strong>‘የማህበራዊ ሥላሴ’ (Social Trinitarianism)</strong> አስተምህሮ ከፍተኛ ትኩረት አግኝቷል። ይህ ፍልስፍና እንደሚያስተምረው፣ እግዚአብሔር ብቻውን የነበረ (Monadic) ከሆነ፣ ፍቅር የሚለው ጽንሰ-ሀሳብ ዓለም ከመፈጠሩ በፊት ትርጉም አይኖረውም ነበር። ፍቅር ሁልጊዜ አፍቃሪ (Lover)፣ ተወዳጅ (Beloved) እና ሁለቱ የሚጋሩት ማሰሪያ (The Bond of Love) ይፈልጋል። በሥላሴ ውስጥ አብ አፍቃሪው፣ ወልድ ተወዳጁ፣ መንፈስ ቅዱስ ደግሞ የፍቅር መንፈስ በመሆናቸው፣ እግዚአብሔር በራሱ ዘላለማዊ ማህበረሰብ (Eternal Community of Love) አለው። ይህ <strong>‘የግንኙነት ህልውና’ (Relational Ontology)</strong> ከማንኛውም የቁስ አካል ሎጂክ በላይ የሥላሴን አስፈላጊነት በምሁራዊ ደረጃ ያረጋግጣል።</p>
-            </div>
-
-            <!-- Section 5 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">5. የቋንቋና የትርጉም ወሰን (Semantics, Metaphor, and Analogy)</h3>
-                <p>ብዙዎቹ የሥላሴ ተቃውሞዎች የሚመነጩት ከሰዎች የተወሰነ የቋንቋ አጠቃቀም (Semantic Limitation) ነው። የሰው ቋንቋ የተፈጠረው ለፍጡራን ዓለም እንጂ ወሰን ለሌለው ፈጣሪ (The Infinite) አይደለም። በአናሊቲክ ፍልስፍና ውስጥ <strong>‘Catachresis’</strong> (የቃል ውሰደት) ተብሎ እንደሚታወቀው፣ መለኮታዊ እውነታዎችን ስንገልጽ የምንጠቀመው በምሳሌና በምስል (Analogy) ነው። ፀሐይ፣ ብርሃን እና ሙቀት ሲባል ምሳሌው ፍጹም አይደለም፤ ነገር ግን የሰውን አእምሮ ከስህተት ጠብቆ ወደ ረቂቁ እውነት ለመምራት ያገለግላል።</p>
-            </div>
-
-            <!-- Section 6 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">6. ታሪካዊ ኑፋቄዎች፡ አርዮስ (Arianism) እና ሳቤልዮስ (Modalism)</h3>
-                <p>በቤተክርስቲያን ታሪክ ውስጥ የሥላሴን ሎጂክ ባለመረዳት የተነሱ ሁለት አደገኛ ጽንፎች ነበሩ፡-
-                <br>ሀ) <strong>አርዮስ (Arianism):</strong> “ወልድ ከተፈጠረ በኋላ የተገኘ ፍጡር ነው” በማለት የሥላሴን ዘላለማዊነት አቃለለ። ይህ በሎጂክ ሰውን ከፈጣሪ ጋር እኩል አድርጎ የማየት ስህተት ነው።
-                <br>ለ) <strong>ሳቤልዮስ / ሞዳሊዝም (Modalism):</strong> “አንድ አካል ብቻ አለ፤ እርሱም ሲያስፈልግ አብ፣ ሲያስፈልግ ወልድ፣ ሲያስፈልግ መንፈስ ቅዱስ ሆኖ ይገለጣል” አለ። ይህ ደግሞ በጌታ በኢየሱስ ክርስቶስ ስቅለት ወቅት አብ በዕንጨት ላይ ተሰቀለ ከሚል ከባድ ሥነ-መለኮታዊ ስህተት ጋር ያጋጫል። የኒቂያ ጉባዔ እነዚህን ሁለቱንም ውድቅ አድርጎ ትክክለኛውን ርትዕት ሃይማኖት አጸደቀ።</p>
-            </div>
-
-            <!-- Section 7 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">7. የዘመናዊ አናሊቲክ ፈላስፎች መፍትሄዎች (Richard Swinburne & William Lane Craig)</h3>
-                <p>በዘመናችን ያሉ ታዋቂ ክርስቲያን ፈላስፎች እንደ ሪቻርድ ስዊንበርን (Richard Swinburne) እና ዊሊያም ሌይን ክሬግ (William Lane Craig) የመሳሰሉት የሥላሴን ችግር ለመፍታት <strong>‘Social Trinitarian Models’</strong> እና <strong>‘Divine Mind Models’</strong> አቅርበዋል። ክሬግ እንዳብራራው፣ አእምሮ (Mind) ባለብዙ ገጽታ (Multi-personal consciousness) ሊኖረው ይችላል። ልክ በአንድ መለኮታዊ ንቃተ-ህሊና ውስጥ ሦስት የተዋቡ የግለሰብ መገለጫዎች እንዳሉ ሁሉ፣ የሥላሴ ምስጢር ከዘመናዊ ሳይኮሎጂ እና ኒውሮሳይንስ (Neuroscience) የእውቀት ገደብ ጋርም የሚስማማ ጥልቅ ፍልስፍና አለው።</p>
-            </div>
-
-            <!-- Section 8 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">8. የኤፒስተሞሎጂ ትህትና (Epistemological Humility)</h3>
-                <p>በፍልስፍና ውስጥ ኤፒስተሞሎጂ (የዕውቀት ጥናት) እንደሚያስተምረው፣ ፍጡር የፈጣሪውን ሙሉ መጠን አውቆ መጨረስ አይችልም። ማሰሮ ሰሪውን አውቆ ሊጨርሰው እንደማይችል ሁሉ (ኢሳ 45፡9)፣ የሰው አእምሮም ፈጣሪውን በመጠኑ ልክ እንጂ በመሉ ልኩ መረዳት አይችልም፡- “እግዚአብሔር ከእኛ እጅግ ታላቅ ነውና አንመረምረውም” (ኢዮብ 37፡23)። የሥላሴን ምስጢር በሰዎች አእምሮ ማዕቀፍ ብቻ ሙሉ በሙሉ መዝጋት መሞከር የሰውን አእምሮ ውሱንነት አለማወቅ ነው።</p>
-            </div>
-
-            <!-- Section 9 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">9. የሥላሴና የክርስቶስ ቤዛነት ግንኙነት (Soteriological Necessity)</h3>
-                <p>የሥላሴ ምስጢር የቲዎሪ ወይም የፍልስፍና ክርክር ብቻ አይደለም፤ ለድኅነታችን (Soteriology) ወሳኝ መሠረት ነው። አዳኝ የሚችለው እግዚአብሔር ብቻ ነው፤ ነገር ግን የሚሰቃየውና የሚሞተው በሥጋ የተገለጠው ወልድ ነው። አብ ካላ송መ፣ ወልድ ሰው ሆኖ ካልተሰቀለ፣ መንፈስ ቅዱስም በልባችን አድሮ ካላጸናን የሰው ልጅ መዳን ፈጽሞ ሊታሰብ አይችልም። ስለዚህ የሥላሴ ምስጢር የቤዛነታችን የጀርባ አጥንት ነው።</p>
-            </div>
-
-            <!-- Section 10 -->
-            <div class="bg-[#111] border border-[#333] p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-[#FFD700] mb-3">10. ማጠቃለያ፡ እምነት ከምሁራዊ ጥልቀት ጋር</h3>
-                <p>በመጨረሻም፣ የሥላሴ ምስጢር የሰው አእምሮ የሚሰናከልበት ድንጋይ ሳይሆን፣ በእምነትና በፍቅር የሚመረመር የሕይወት ምንጭ ነው። በቁጥር ስሌት ወይም በሂሳብ ቀመር ብቻ ሊቀረጽ የማይችለው መለኮታዊው እውነት፣ በባህርይና በአካል መዋቅሮች፣ በግንኙነት ፍልስፍና እና በመጽሐፍ ቅዱስ ምስክርነት ተረጋግጦ ይኖራል። አማኝ ሰው ይህንን ምሁራዊ ትምህርት ሲማር ከማንኛውም የኑፋቄ ማዕበል ነጻ ሆኖ በጸሎትና በዕውቀት ይጸናል።</p>
-            </div>
-
-            <div class="pt-6">
-                <button onclick="closeSlideView('view-module2')" class="w-full bg-[#FFD700] text-black font-bold py-4 rounded-lg uppercase tracking-widest shadow-[0_0_20px_rgba(255,215,0,0.4)] hover:bg-yellow-400 transition duration-300">
-                    ኮርሱን አጠናቅቄአለሁ (Finish Module)
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-quiz" class="slide-view">
-        <div class="texture-bg"></div>
-        <div class="noise-overlay"></div>
-        <header class="sticky top-0 bg-black/95 backdrop-blur-md border-b border-[#FFD700]/30 z-40 px-4 py-4 flex items-center justify-between">
-            <button onclick="closeSlideView('view-quiz')" class="text-gray-400 flex items-center space-x-2 p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-            <span class="text-[#FFD700] font-bold text-sm tracking-widest uppercase">Knowledge Check</span>
-        </header>
-        <div class="max-w-2xl mx-auto px-5 py-8 pb-32">
-            <div class="mb-6 flex justify-between items-end border-b border-[#333] pb-4">
-                <h2 class="text-xl font-bold text-white">Day <span id="quiz-day-display">1</span> of 3</h2>
-                <span class="text-xs text-[#FFD700] uppercase tracking-wider">10 Questions</span>
-            </div>
-            <div id="quiz-container" class="space-y-8">
-                <!-- Questions injected by JS -->
-            </div>
-            <button onclick="submitQuiz()" class="w-full mt-10 bg-transparent border-2 border-[#FFD700] text-[#FFD700] font-bold py-4 rounded-lg uppercase tracking-widest hover:bg-[#FFD700] hover:text-black transition duration-300">
-                Submit Answers
-            </button>
-            <p id="quiz-error" class="text-red-500 text-sm mt-3 text-center hidden">እባክዎ ሁሉንም ጥያቄዎች ይመልሱ። (Please answer all questions)</p>
-        </div>
-    </div>
-
-    <div id="view-timer" class="slide-view">
-        <div class="texture-bg"></div>
-        <div class="noise-overlay"></div>
-        <header class="sticky top-0 bg-transparent z-40 px-4 py-4 flex items-center justify-between">
-            <button onclick="closeSlideView('view-timer')" class="text-gray-400 flex items-center space-x-2 p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-        </header>
-        <div class="flex flex-col items-center justify-center h-[70vh] text-center px-4">
-            <svg class="w-16 h-16 text-[#FFD700] mb-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <h2 class="text-2xl font-bold text-white mb-2">Quiz Locked</h2>
-            <p class="text-gray-400 mb-6">እባክዎ ለቀጣዩ ፈተና ይጠብቁ።</p>
-            <div class="text-4xl font-cinematic font-bold text-[#FFD700] tracking-widest border border-[#FFD700]/30 px-6 py-4 rounded-lg bg-black/50" id="countdown-display">
-                23:59:59
-            </div>
-            <!-- Developer Bypass for testing -->
-            <button onclick="bypassTimer()" class="mt-12 text-xs text-gray-600 underline">Dev Bypass Timer</button>
-        </div>
-    </div>
-
-    <div id="view-research" class="slide-view">
-        <div class="texture-bg"></div>
-        <div class="noise-overlay"></div>
-        <header class="sticky top-0 bg-black/95 backdrop-blur-md border-b border-[#FFD700]/30 z-40 px-4 py-4 flex items-center justify-between">
-            <button onclick="closeSlideView('view-research')" class="text-gray-400 flex items-center space-x-2 p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-            <span class="text-[#FFD700] font-bold text-sm tracking-widest uppercase">Research Final</span>
-        </header>
-        <div class="max-w-2xl mx-auto px-5 py-8 pb-32 text-center">
-            <div class="w-16 h-16 rounded-full bg-[#FFD700]/10 border border-[#FFD700] mx-auto flex items-center justify-center mb-6">
-                <svg class="w-8 h-8 text-[#FFD700]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            </div>
-            <h2 class="text-2xl font-bold text-[#FFD700] mb-6">ጥናትና ምርምር (Research)</h2>
-            <div class="bg-[#111] border border-[#333] rounded-lg p-6 text-left mb-8">
-                <p class="text-gray-300 leading-relaxed text-sm">
-                    በአምስቱ አዕማደ ምስጢራት እና በጸሎተ ሃይማኖት (የኒቂያ ጉባዔ ውሳኔ) መካከል ያለውን ሥነ-መለኮታዊ ትስስር አብራሩ።<br><br>
-                    <span class="text-[#FFD700] text-xs uppercase tracking-widest">Requirement: </span> Submit a PDF document detailing your research to unlock Module 3.
-                </p>
-            </div>
-            
-            <input type="file" id="pdf-upload" accept=".pdf" class="hidden" onchange="handleFileSelect(event)">
-            <label for="pdf-upload" class="cursor-pointer block w-full border-2 border-dashed border-[#FFD700]/50 text-gray-400 py-10 rounded-lg hover:border-[#FFD700] hover:text-[#FFD700] transition mb-4">
-                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                <span id="file-name-display">Select PDF File</span>
-            </label>
-
-            <button onclick="submitResearch()" class="w-full bg-[#FFD700] text-black font-bold py-4 rounded-lg uppercase tracking-widest shadow-[0_0_20px_rgba(255,215,0,0.4)] opacity-50 cursor-not-allowed transition" id="submit-research-btn" disabled>
-                Upload & Unlock Module 3
-            </button>
-        </div>
-    </div>
-
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 w-full bg-black/95 backdrop-blur-md border-t border-[#FFD700]/30 flex z-30">
-        <button onclick="switchTab('main')" id="tab-main" class="flex-1 py-4 flex flex-col items-center justify-center text-[#FFD700] border-b-2 border-[#FFD700] bg-[#1a1a00] transition">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Main Course</span>
+    <nav class="fixed bottom-0 w-full bg-black bg-opacity-95 border-t border-yellow-600 border-opacity-40 flex z-40 backdrop-blur-md">
+        <button onclick="switchTab('main-course')" id="tab-main" class="flex-1 py-4 text-center text-cinematic-yellow font-bold border-b-2 border-cinematic-yellow transition duration-300 bg-[#1a1a00]">
+            <i class="fas fa-book-open block mb-1 text-xl"></i>
+            <span class="text-xs tracking-wider uppercase">Main Course</span>
         </button>
-        <button onclick="switchTab('video')" id="tab-video" class="flex-1 py-4 flex flex-col items-center justify-center text-gray-500 border-b-2 border-transparent hover:text-[#FFD700] transition">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Video Course</span>
+        <button onclick="switchTab('video-course')" id="tab-video" class="flex-1 py-4 text-center text-gray-500 font-bold border-b-2 border-transparent hover:text-cinematic-yellow transition duration-300">
+            <i class="fas fa-play-circle block mb-1 text-xl"></i>
+            <span class="text-xs tracking-wider uppercase">Video Course</span>
         </button>
     </nav>
 
+    <!-- App Logic Scripts -->
     <script>
-        /* State Management */
+        // State Management
         let appState = JSON.parse(localStorage.getItem('tinishu_state')) || {
-            quizDay: 0, // 0 to 3
-            lastQuizTime: 0,
-            mod3Unlocked: false
+            mod1Completed: false,
+            mod1ExamDay: 0,
+            mod1TimerExpiry: 0,
+            mod2Completed: false,
+            mod2ExamDay: 0,
+            mod2TimerExpiry: 0
         };
-
-        const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-        let timerInterval;
 
         function saveState() {
             localStorage.setItem('tinishu_state', JSON.stringify(appState));
-            updateUI();
+            updateUIStatus();
         }
 
-        /* 30 Multiple Choice Questions */
-        const allQuestions = [
-            // Day 1 (1-10)
-            { q: "እግዚአብሔር የሚለው ቃል ትርጉም ምንድን ነው?", options: ["የዓለም ጌታ (ፈጣሪ)", "መንፈስ", "ፍጡር"], ans: 0 },
-            { q: "ዶግማ ማለት ምን ማለት ነው?", options: ["ሥርዓት", "የእምነት መሠረት", "ታሪክ"], ans: 1 },
-            { q: "ቀኖና ማለት ምን ማለት ነው?", options: ["የእምነት መሠረት", "የማይለወጥ ሕግ", "ሥርዓተ ቤተክርስቲያን (የሚሻሻል)"], ans: 2 },
-            { q: "እምነት የሚለው ቃል መሠረታዊ ፍቺ ምንድን ነው?", options: ["መታመን/ማመን", "መጠራጠር", "ማወቅ"], ans: 0 },
-            { q: "እግዚአብሔር በዕብራይስጥ 'ኤል' ሲባል ትርጉሙ ምንድን ነው?", options: ["መጀመሪያና መጨረሻ", "ኃያል አምላክ", "ያለና የሚኖር"], ans: 1 },
-            { q: "እግዚአብሔር ስንት አካል አለው?", options: ["አንድ", "ሦስት", "አምስት"], ans: 1 },
-            { q: "በመለኮት፣ በመፍጠር እና በስልጣን እግዚአብሔር ስንት ነው?", options: ["አንድ", "ሦስት", "አይታወቅም"], ans: 0 },
-            { q: "ሃይማኖት ስንት ናት? (በኤፌሶን 4፡5 መሠረት)", options: ["ብዙ", "ሁለት", "አንዲት ናት"], ans: 2 },
-            { q: "ያለ እምነት እግዚአብሔርን ደስ ማሰኘት ይቻላል?", options: ["ይቻላል", "አይቻልም", "በከፊል ይቻላል"], ans: 1 },
-            { q: "ቀኖናን ማን ይወስናል?", options: ["ማንም ሰው", "የሃይማኖት አባቶች / ቅዱስ ሲኖዶስ", "መንግስት"], ans: 1 },
-            // Day 2 (11-20)
-            { q: "ቤተክርስቲያን ማለት ምን ማለት ነው?", options: ["ሕንጻ ብቻ", "የክርስቲያኖች ኅብረት/አንድነት", "የአይሁድ መሰብሰቢያ"], ans: 1 },
-            { q: "የኦርቶዶክሳዊት ተዋሕዶ ቤተክርስቲያን መሠረት የሆኑት ምንድን ናቸው?", options: ["አምስቱ አዕማደ ምስጢራት", "አሥርቱ ትእዛዛት", "ሰባቱ ምስጢራተ ቤተክርስቲያን"], ans: 0 },
-            { q: "አዕማድ የሚለው ቃል ነጠላ ቁጥር ምንድን ነው?", options: ["ዓምድ (ምሰሶ)", "ዓለም", "እምነት"], ans: 0 },
-            { q: "አምስቱ አዕማደ ምስጢራት 'ምስጢር' የተባሉበት ምክንያት ምንድን ነው?", options: ["ስለሚደበቁ", "በሥጋዊ ጥበብ ለመረዳት ስለማይቻል (ረቂቅ ስለሆኑ)", "ስለማይታመኑ"], ans: 1 },
-            { q: "ምስጢረ ሥላሴ ስለ ምን ያስተምራል?", options: ["ስለ ዳግም መወለድ", "የሥላሴን አንድነትና ሦስትነት", "የአምላክን ሰው መሆን"], ans: 1 },
-            { q: "ምስጢረ ሥጋዌ ስለ ምን ያስተምራል?", options: ["ስለ ዳግም መጽዓት", "የአምላክን ሰው መሆን", "ስለ ሥጋና ደም"], ans: 1 },
-            { q: "ምስጢረ ጥምቀት ምንን ያስተምራል?", options: ["ዳግም መወለድን", "ትንሣኤ ሙታንን", "አንድነትን"], ans: 0 },
-            { q: "ምስጢረ ቁርባን ከየትኛው ጋር ይያያዛል?", options: ["ሥጋዬን የሚበላ ደሜንም የሚጠጣ (ዮሐ 6፡54)", "አሕዛብን ሁሉ በአብ በወልድ ስም... (ማቴ 28፡20)", "ቃልም ሥጋ ሆነ (ዮሐ 1፡14)"], ans: 0 },
-            { q: "የትንሣኤ ሙታን ምስጢር ምንድን ነው?", options: ["ሰው ሆኖ መወለድ", "የሙታን መነሳት (ስለ ዳግም ምጽዓት)", "መጠመቅ"], ans: 1 },
-            { q: "አምስቱ አዕማደ ምስጢራት አምስት የሆኑት ምንን ምሳሌ በማድረግ ነው?", options: ["አምስቱን አህጉር", "አራቱን ባህርያተ ሥጋና አምስተኛው ባህርየ ነፍስ", "አምስቱን መጻሕፍተ ሙሴ"], ans: 1 },
-            // Day 3 (21-30)
-            { q: "የአዕማደ ምስጢራት መሠረት (ይዘት ምንጭ) የትኛው ነው?", options: ["የግሪክ ፍልስፍና", "የጌታና የሐዋርያት ትምህርት (መጽሐፍ ቅዱስ)", "ባህላዊ እምነት"], ans: 1 },
-            { q: "ስያሜያቸውና አነሳሳቸው በየትኛው ጉባዔ ነው የታወጀው?", options: ["በጉባዔ ኒቂያ (ጸሎተ ሃይማኖት)", "በጉባዔ ኤፌሶን", "በጉባዔ ኬልቄዶን"], ans: 0 },
-            { q: "በጸሎተ ሃይማኖት 'ነአምን በአሃዱ አምላክ እግዚአብሔር' የትኛውን ምስጢር ያጸናል?", options: ["ምስጢረ ጥምቀት", "ምስጢረ ቁርባን", "ምስጢረ ሥላሴ"], ans: 2 },
-            { q: "ስለእኛ ስለ ሰዎች ስለመዳናችን ከሰማይ ወረደ... የሚለው የትኛውን ምስጢር ያመለክታል?", options: ["ምስጢረ ሥጋዌ", "ምስጢረ ትንሣኤ ሙታን", "ምስጢረ ሥላሴ"], ans: 0 },
-            { q: "አዕማደ ምስጢርን በሚገባ ማወቅ ለምን ይጠቅማል?", options: ["ሀብታም ለመሆን", "ከኑፋቄ ለመጠበቅና በሃይማኖት ጸንቶ ለመኖር", "ታዋቂ ለመሆን"], ans: 1 },
-            { q: "በዓይን አይተን በእጅ ዳስሰን ካልሆነ አናምንም ማለት ለምን አይገባም?", options: ["እግዚአብሔር መንፈስ ስለሆነ (ረቂቅ በመሆኑ)", "የተከለከለ ስለሆነ", "ኃጢአት ስለሆነ"], ans: 0 },
-            { q: "እግዚአብሔርን የምናውቀው በምን መጠን ነው?", options: ["ባለን የትምህርት ደረጃ", "እርሱ ራሱን በገለጠው መጠን", "በሳይንስ ጥናት"], ans: 1 },
-            { q: "መጽሐፍ ቅዱስ የእግዚአብሔርን ህልውና...", options: ["ለማረጋገጥ ይሞክራል", "ህልውናውን መሠረት አድርጎ ይጀምራል", "አያነሳም"], ans: 1 },
-            { q: "ቅድስት ቤተክርስቲያን አምስቱን ምሰሶዎች የምታስጨብጠው ለምንድን ነው?", options: ["ከኅሊና እግዚአብሔር እንዳንርቅና ጸንተን እንድንኖር", "ሌላ እምነት እንዳናከብር", "ለታሪክ ጥናት"], ans: 0 },
-            { q: "የዮሐንስ ወንጌል 5፡1 ላይ ያለችው አምስት እርከኖች የነበራት መጠመቂያ የማን ምሳሌ ናት?", options: ["የአምስቱ አዕማደ ምስጢራት", "የአምስቱ ሐዋርያት", "የቤተመቅደስ"], ans: 0 }
-        ];
+        function updateUIStatus() {
+            const mod1Status = document.getElementById('mod1-status');
+            if (appState.mod1Completed) {
+                mod1Status.innerText = "Status: Completed";
+                mod1Status.className = "text-xs text-green-400 mt-1";
+            } else if (appState.mod1ExamDay > 0) {
+                mod1Status.innerText = `Status: Exam in Progress (Day ${appState.mod1ExamDay}/3)`;
+                mod1Status.className = "text-xs text-yellow-400 mt-1";
+            } else {
+                mod1Status.innerText = "Status: Not Completed";
+                mod1Status.className = "text-xs text-yellow-400 mt-1";
+            }
 
-        /* UI Updates & Navigation */
-        function updateUI() {
-            if(appState.mod3Unlocked) {
-                const mod3Card = document.getElementById('mod3-card');
-                mod3Card.classList.remove('locked');
-                document.getElementById('mod3-label').innerText = "Module 3";
-                document.getElementById('mod3-icon').outerHTML = `<svg class="w-5 h-5 text-[#FFD700] transition transform hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>`;
-                document.getElementById('mod3-icon-box').classList.add('text-[#FFD700]', 'border-[#FFD700]/30');
-                document.getElementById('mod3-icon-box').classList.remove('text-gray-500', 'border-[#333]');
+            const mod2Card = document.getElementById('mod2-card');
+            const mod2Status = document.getElementById('mod2-status');
+            const mod2Icon = document.getElementById('mod2-icon');
+            if (appState.mod1Completed) {
+                mod2Card.classList.remove('opacity-70');
+                mod2Icon.className = "fas fa-chevron-right text-cinematic-yellow";
+                if (appState.mod2Completed) {
+                    mod2Status.innerText = "Status: Completed";
+                    mod2Status.className = "text-xs text-green-400 mt-1";
+                } else if (appState.mod2ExamDay > 0) {
+                    mod2Status.innerText = `Status: Exam in Progress (Day ${appState.mod2ExamDay}/3)`;
+                    mod2Status.className = "text-xs text-yellow-400 mt-1";
+                } else {
+                    mod2Status.innerText = "Status: Unlocked";
+                    mod2Status.className = "text-xs text-yellow-400 mt-1";
+                }
+            } else {
+                mod2Card.classList.add('opacity-70');
+                mod2Icon.className = "fas fa-lock text-gray-500";
+                mod2Status.innerText = "Status: Locked (Complete Module 1 First)";
+                mod2Status.className = "text-xs text-gray-400 mt-1";
+            }
+
+            const mod3Card = document.getElementById('mod3-card');
+            const mod3Status = document.getElementById('mod3-status');
+            const mod3Icon = document.getElementById('mod3-icon');
+            if (appState.mod2Completed) {
+                mod3Card.classList.remove('opacity-70');
+                mod3Icon.className = "fas fa-chevron-right text-cinematic-yellow";
+                mod3Status.innerText = "Status: Unlocked";
+                mod3Status.className = "text-xs text-yellow-400 mt-1";
+            } else {
+                mod3Card.classList.add('opacity-70');
+                mod3Icon.className = "fas fa-lock text-gray-500";
+                mod3Status.innerText = "Status: Locked (Complete Module 2 First)";
+                mod3Status.className = "text-xs text-gray-400 mt-1";
             }
         }
 
+        window.onload = function() {
+            updateUIStatus();
+            setInterval(checkTimerTick, 1000);
+        };
+
         // Drawer Logic
+        const drawer = document.getElementById('drawer');
+        const overlay = document.getElementById('overlay');
+        
         function toggleDrawer() {
-            const drawer = document.getElementById('drawer');
-            const overlay = document.getElementById('drawer-overlay');
             if (drawer.classList.contains('-translate-x-full')) {
                 drawer.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
@@ -528,159 +376,306 @@
             }
         }
 
+        // Test helper function to instantly unlock and open Module 2
+        function forceUnlockModule2ForTest() {
+            appState.mod1Completed = true;
+            saveState();
+            toggleDrawer();
+            checkAndOpenModule2();
+        }
+
         // Tab Navigation Logic
         function switchTab(tabId) {
-            document.getElementById('tab-main').className = `flex-1 py-4 flex flex-col items-center justify-center ${tabId==='main'?'text-[#FFD700] border-b-2 border-[#FFD700] bg-[#1a1a00]':'text-gray-500 border-b-2 border-transparent hover:text-[#FFD700]'} transition`;
-            document.getElementById('tab-video').className = `flex-1 py-4 flex flex-col items-center justify-center ${tabId==='video'?'text-[#FFD700] border-b-2 border-[#FFD700] bg-[#1a1a00]':'text-gray-500 border-b-2 border-transparent hover:text-[#FFD700]'} transition`;
-            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + tabId).classList.add('active');
+            document.getElementById('tab-main').classList.remove('text-cinematic-yellow', 'border-cinematic-yellow', 'bg-[#1a1a00]');
+            document.getElementById('tab-main').classList.add('text-gray-500', 'border-transparent');
+            document.getElementById('tab-video').classList.remove('text-cinematic-yellow', 'border-cinematic-yellow', 'bg-[#1a1a00]');
+            document.getElementById('tab-video').classList.add('text-gray-500', 'border-transparent');
+            
+            let activeTab = document.getElementById(`tab-${tabId.split('-')[0]}`);
+            activeTab.classList.remove('text-gray-500', 'border-transparent');
+            activeTab.classList.add('text-cinematic-yellow', 'border-cinematic-yellow', 'bg-[#1a1a00]');
+
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(`view-${tabId}`).classList.add('active');
             window.scrollTo(0, 0);
         }
 
-        function openSlideView(viewId) {
-            document.getElementById(viewId).classList.add('active');
-        }
-        function closeSlideView(viewId) {
-            document.getElementById(viewId).classList.remove('active');
-        }
-
-        function openModule3() {
-            if(appState.mod3Unlocked) {
-                // Open Module 3 view when built
-            }
-        }
-
-        /* Quiz Logic */
-        function startQuizLogic() {
-            if(appState.quizDay >= 3) {
-                // Done with quizzes, go to research
-                closeSlideView('view-reading');
-                openSlideView('view-research');
-                return;
-            }
-
-            const now = Date.now();
-            if (appState.lastQuizTime > 0 && (now - appState.lastQuizTime) < ONE_DAY_MS) {
-                // Locked
-                closeSlideView('view-reading');
-                openSlideView('view-timer');
-                startTimer(appState.lastQuizTime + ONE_DAY_MS);
-            } else {
-                // Ready for next quiz
-                loadQuizData();
-                closeSlideView('view-reading');
-                openSlideView('view-quiz');
-            }
-        }
-
-        function loadQuizData() {
-            const startIdx = appState.quizDay * 10;
-            const qs = allQuestions.slice(startIdx, startIdx + 10);
-            
-            document.getElementById('quiz-day-display').innerText = (appState.quizDay + 1);
-            
-            let html = '';
-            qs.forEach((q, index) => {
-                let optionsHtml = '';
-                q.options.forEach((opt, oIdx) => {
-                    optionsHtml += `
-                        <div class="quiz-option">
-                            <input type="radio" name="q${index}" id="q${index}_o${oIdx}" value="${oIdx}">
-                            <label for="q${index}_o${oIdx}">${opt}</label>
-                        </div>
-                    `;
-                });
-                html += `
-                    <div class="bg-[#111] p-5 rounded-lg border border-[#333]">
-                        <h3 class="text-[#FFD700] font-bold mb-3">${index + 1}. ${q.q}</h3>
-                        ${optionsHtml}
-                    </div>
-                `;
+        // Open specific lesson
+        function openLesson(lessonId) {
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
             });
-            document.getElementById('quiz-container').innerHTML = html;
-            document.getElementById('quiz-error').classList.add('hidden');
+            if(lessonId === 'aemade-mistir') {
+                document.getElementById('view-lesson-detail').classList.add('active');
+                window.scrollTo(0, 0);
+            }
         }
 
-        function submitQuiz() {
-            let allAnswered = true;
-            for(let i=0; i<10; i++) {
-                if(!document.querySelector(`input[name="q${i}"]:checked`)) {
-                    allAnswered = false; break;
-                }
+        function checkAndOpenModule2() {
+            if (!appState.mod1Completed) {
+                alert("እባክዎ መጀመሪያ ሞጁል 1ን አጠናቀው ፈተናውንና የምርምር ፒዲኤፍ ያስገቡ። (ወይንም ከጎን ማውጫ ውስጥ 'DEV: ሞጁል 2ን ለሙከራ ክፈት' የሚለውን ይጠቀሙ)");
+                return;
             }
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
+            document.getElementById('view-module2-detail').classList.add('active');
+            window.scrollTo(0, 0);
+        }
 
-            if(!allAnswered) {
-                document.getElementById('quiz-error').classList.remove('hidden');
+        function checkAndOpenModule3() {
+            if (!appState.mod2Completed) {
+                alert("እባክዎ መጀመሪያ ሞጁል 2ን አጠናቀው ፈተናውንና የፕሮጀክት ፒዲኤፍ ያስገቡ።");
+                return;
+            }
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
+            document.getElementById('view-module3-detail').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function goBack() {
+            switchTab('main-course');
+        }
+
+        // Quiz Question Banks
+        const questionsMod1 = [
+            { q: "1. ትምህርተ ሃይማኖት በምን በሁለት ይከፈላል?", opts: ["ሀ) ዶግማ እና ቀኖና", "ለ) ብሉይ እና ሐዲስ", "ሐ) ግዕዝ እና ጽርዕ", "መ) መለኮት እና ፍጥረት"], ans: 0 },
+            { q: "2. 'እግዚአብሔር' የሚለው ቃል ምንን ያመለክታል?", opts: ["ሀ) የዓለም ጌታ (ፈጣሪ፣ ገዥ)", "ለ) የሰማይና የምድር ኃይል", "ሐ) የማይመረመር መንፈስ", "መ) ቅዱስ እና ንጹሕ"], ans: 0 },
+            { q: "3. በእብራይስጥ 'ያህዌ' ማለት ምን ማለት ነው?", opts: ["ሀ) ኃያል አምላክ", "ለ) ያለና የሚኖር፣ እንደ ፈቃዱ የሚሠራ", "ሐ) የሰማይ ጌታ", "መ) መጀመሪያውና መጨረሻው"], ans: 1 },
+            { q: "4. እምነት ማለት በግዕዝ ምን ማለት ነው?", opts: ["ሀ) ማመን ወይም መታመን", "ለ) ማወቅና መረዳት", "ሐ) መጸለይና ማመስገን", "መ) በጽናት መቆም"], ans: 0 },
+            { q: "5. ሐዋርያው ቅዱስ ጳውሎስ ስለ እምነት ሲናገር ምን ብሏል?", opts: ["ሀ) እምነት የፍቅር መሠረት ነው", "ለ) እምነት ተስፋ ስለምናደርገው ነገር የሚያስረግጥ ነው", "ሐ) እምነት ከሥራ ጋር ይሞታል", "መ) እምነት የነፍስ መድኃኒት ነው"], ans: 1 },
+            { q: "6. ዶግማ (መሠረተ እምነት) ከየትኛው ቋንቋ የመጣ ነው?", opts: ["ሀ) የግሪክ", "ለ) የግዕዝ", "ሐ) የዕብራይስጥ", "መ) የላቲን"], ans: 0 },
+            { q: "7. ከሚከተሉት ውስጥ የዶግማ መገለጫ ያልሆነው ማነው?", opts: ["ሀ) አይጨመርበትም፤ አይቀነስበትም", "ለ) እንደጊዜው ሁኔታ ይሻሻላል", "ሐ) እስከ ሞት ድረስ አጥብቀን የምንይዘው ነው", "መ) መሠረታዊ የእምነት ትምህርት ነው"], ans: 1 },
+            { q: "8. ቀኖና (ሥርዓት) ከዶግማ የሚለየው በምን መልኩ ነው?", opts: ["ሀ) በሃይማኖት አባቶች እንደጊዜው ሁኔታ የሚሻሻል በመሆኑ", "ለ) መለኮታዊ ትእዛዝ በመሆኑ", "ሐ) ፈጽሞ የማይለወጥ በመሆኑ", "መ) ከብሉይ ኪዳን ብቻ የተወሰደ በመሆኑ"], ans: 0 },
+            { q: "9. 'አዕማድ' የሚለው ቃል ትርጉም ምንድን ነው?", opts: ["ሀ) ምሰሶ", "ለ) መጽሐፍ", "ሐ) ምስጢር", "መ) መንገድ"], ans: 0 },
+            { q: "10. አምስቱ አዕማደ ምስጢራት አምስት መሆናቸው የማን ምሳሌ ነው?", opts: ["ሀ) አራቱ ባህርያተ ሥጋ እና አምስተኛው ባህርየ ነፍስ", "ለ) አምስቱ የሙሴ መጻሕፍት", "ሐ) አምስቱ ሐዋርያት", "መ) አምስቱ የቤተክርስቲያን ዓምዶች"], ans: 0 },
+            { q: "11. 'ምሥጢር' የሚለው ቃል ትርጉም ምንድን ነው?", opts: ["ሀ) ስውር፣ ድብቅ፣ ሽሽግ", "ለ) አስደናቂ ተአምር", "ሐ) ረቂቅ እውቀት", "መ) የማይደረስበት ሰማይ"], ans: 0 },
+            { q: "12. አምስቱ አዕማደ ምስጢር በአፈጻጸማቸው በስንት ይከፈላሉ?", opts: ["ሀ) በሦስት", "ለ) በሁለት", "ሐ) በአራት", "መ) በአምስት"], ans: 0 },
+            { q: "13. ከሚከተሉት ውስጥ አምነን የምንቀበላቸው አዕማደ ምስጢር የትኞቹ ናቸው?", opts: ["ሀ) ምሥጢረ ሥላሴና ምሥጢረ ሥጋዌ", "ለ) ምሥጢረ ጥምቀትና ምሥጢረ ቁርባን", "ሐ) ምሥጢረ ትንሣኤ ሙታን", "መ) ሁሉም"], ans: 0 },
+            { q: "14. ከሚከተሉት ውስጥ አምነን የምንተገብራቸው አዕማደ ምስጢር የትኞቹ ናቸው?", opts: ["ሀ) ምሥጢረ ጥምቀትና ምሥጢረ ቁርባን", "ለ) ምሥጢረ ሥላሴ", "ሐ) ምሥጢረ ትንሣኤ ሙታን", "መ) ምሥጢረ ሥጋዌ"], ans: 0 },
+            { q: "15. አምነን በተስፋ የምንጠብቀው አዕማደ ምስጢር የቱ ነው?", opts: ["ሀ) ምሥጢረ ትንሣኤ ሙታን", "ለ) ምሥጢረ ቁርባን", "ሐ) ምሥጢረ ጥምቀት", "መ) ምሥጢረ ሥላሴ"], ans: 0 },
+            { q: "16. አዕማደ ምስጢራትን ማዘጋጀት የጀመሩት አባቶች መሠረት ያደረጉት ሐሳብ ከየት ነው?", opts: ["ሀ) ከጸሎተ ሃይማኖት (የኒቂያ ቀኖና)", "ለ) ከሥርዓተ ቅዳሴ", "ሐ) ከሰባቱ ሊቃውንት", "መ) ከብሉይ ኪዳን ትንቢት"], ans: 0 },
+            { q: "17. 'ነአምን በአሃዱ አምላክ' የሚለው ሐረግ የትኛውን ምስጢር ያጸናል?", opts: ["ሀ) ምሥጢረ ሥላሴ", "ለ) ምሥጢረ ሥጋዌ", "ሐ) ምሥጢረ ጥምቀት", "መ) ምሥጢረ ቁርባን"], ans: 0 },
+            { q: "18. 'ተሰብእ ወተሠገወ' የሚለው ቃል የትኛውን ምስጢር ያጸናል?", opts: ["ሀ) ምሥጢረ ሥጋዌ", "ለ) ምሥጢረ ሥላሴ", "ሐ) ምሥጢረ ቁርባን", "መ) ምሥጢረ ትንሣኤ ሙታን"], ans: 0 },
+            { q: "19. ቤተክርስቲያን ስንል ምን ማለት ነው?", opts: ["ሀ) የክርስቲያኖች ኅብረት / አንድነት", "ለ) የእግዚአብሔር ቤት / መኖሪያ", "ሐ) የምዕመናን ሰውነት (የመንፈስ ቅዱስ መቅደስ)", "መ) ሁሉም"], ans: 3 },
+            { q: "20. አዕማደ ምስጢራትን ጠንቅቆ ማወቅ ለምን ይጠቅማል?", opts: ["ሀ) ከጥርጥርና ከኑፋቄ ለመጠበቅ", "ለ) በሃይማኖት ጸንቶ ጽድቅን ለመፈጸም", "ሐ) የኑፋቄ ማዕበል እንዳይጥለን", "መ) ሁሉም"], ans: 3 },
+            { q: "21. እግዚአብሔር በዕብራይስጥ 'ኤል' ሲባል ምን ማለት ነው?", opts: ["ሀ) ኃያል አምላክ", "ለ) ጌታ", "ሐ) ፈጣሪ", "መ) ሕያው"], ans: 0 },
+            { q: "22. ማመን ማለት ምን ማለት እንደሆነ ሮሜ 10፡17 እንዴት ያስረዳል?", opts: ["ሀ) ከሰሙትና ከተረዱት ትምህርት", "ለ) በልብ መቀበል", "ሐ) ቃልን መስማት", "መ) ሁሉም"], ans: 3 },
+            { q: "23. ሐዋርያው ቅዱስ ጳውሎስ 1ኛ ቆሮ 14፡19 ላይ 'አምስት ቃላት' ሲል የጠቀሰው ምንድን ነው?", opts: ["ሀ) አምስቱን አዕማደ ምስጢራት", "ለ) አምስቱን ቃላት", "ሐ) አምስቱን ጸሎቶች", "መ) አምስቱን ትእዛዛት"], ans: 0 },
+            { q: "24. የፍጡራን ምሥጢር የሚባለው ምንድን ነው?", opts: ["ሀ) በጊዜ የሚገለጥ / የሚታወቅ", "ለ) ከእነ እስከ የሌለው", "ሐ) ረቂቅ መለኮታዊ", "መ) የማይመረመር"], ans: 0 },
+            { q: "25. አዕማደ ምስጢራት 'ምሥጢር' የተባሉበት አንዱ ምክንያት ምንድን ነው?", opts: ["ሀ) በሥጋዊ ጥበብ ብቻ ለመረዳት የማይቻል በመሆኑ", "ለ) ተነቦ የሚጠና ትምህርት ስለሆነ", "ሐ) በዓይን የሚታይ ግዙፍ ነገር ስለሆነ", "መ) ለማንኛውም ሰው በግልጽ ስለሚታወቅ"], ans: 0 },
+            { q: "26. በዮሐንስ ወንጌል 5፡1 የተጠቀሰችው አምስት እርከኖች ያነበራት መጠመቂያ የምን ምሳሌ ናት?", opts: ["ሀ) ለአምስቱ አዕማደ ምሥጢር", "ለ) ለአምስቱ አገሮች", "ሐ) ለአምስቱ ሐዋርያት", "መ) ለአምስቱ ጸሎቶች"], ans: 0 },
+            { q: "27. ጉባኤ ኒቂያ እና ጉባኤ ቁስጥንጥንያ የተደረጉበት ዋና ምክንያት ምንድን ነው?", opts: ["ሀ) ምዕመናንን በትክክለኛው ሃይማኖት ለማጽናትና መናፍቃንን ድል ለመንሳት", "ለ) አዳዲስ መጻሕፍትን ለመጻፍ", "ሐ) የቤተክርስቲያን ሕንፃዎችን ለመገንባት", "መ) የቀዳስያንን ቁጥር ለመወሰን"], ans: 0 },
+            { q: "28. 'ወንሴፎ ትንሳኤ ሙታን' የሚለው ሐረግ የትኛውን ምስጢር ያጸናል?", opts: ["ሀ) ምሥጢረ ትንሣኤ ሙታን", "ለ) ምሥጢረ ቁርባን", "ሐ) ምሥጢረ ጥምቀት", "መ) ምሥጢረ ሥላሴ"], ans: 0 },
+            { q: "29. አባት እናት ቢሞቱበት አዕማደ ምስጢርን ያወቀ አማኝ በምን ይጽናናል?", opts: ["ሀ) በሥላሴ አባትነት", "ለ) በዘመድ አዝማድ", "ሐ) በገንዘብ", "መ) በትምህርት"], ans: 0 },
+            { q: "30. አዕማደ ምስጢራት ይዘት ምንጭ ምንድን ነው?", opts: ["ሀ) የጌታና የሐዋርያት ትምህርት", "ለ) የፈላስፎች አስተሳሰብ", "ሐ) የባህል ልማድ", "መ) የሰዎች ስብስብ"], ans: 0 }
+        ];
+
+        const questionsMod2 = [
+            { q: "1. የሥላሴ ምስጢር በመደብ ሎጂክ (Classical Logic) ሲተነተን የሚነሳው መሠረታዊ ተቃርኖ ምንድን ነው?", opts: ["ሀ) 1 = 3 የሚለው የሂሳብና የሎጂክ ሕግ", "ለ) የእግዚአብሔር ረቂቅነት", "ሐ) የፍጡራን አዕምሮ ውሱንነት", "መ) የጊዜ እና የዘላለም አለመጣጣም"], ans: 0 },
+            { q: "2. ኦርቶዶክሳዊት ቤተክርስቲያን እግዚአብሔርን ስትገልጽ በአንድነት እና በሦስትነት መካከል ያለውን ልዩነት እንዴት ታስታርቃለች?", opts: ["ሀ) በአንድነት በባሕርይ፣ በሦስትነት በአካል", "ለ) በአንድነት በስም፣ በሦስትነት በኃይል", "ሐ) በአንድነት በዘመን፣ በሦስትነት በቦታ", "መ) በሁለቱም በኩል ፍጹም አንድ ናቸው"], ans: 0 },
+            { q: "3. 'ኦንቶሎጂካል ልዩነት' (Ontological Distinction) በሥላሴ አካላት መካከል ሲገለጽ ምንን ያመለክታል?", opts: ["ሀ) የአብ ወላዲነት፣ የወልድ ተወላዲነት እና የመንፈስ ቅዱስ ሰራፂነት", "ለ) የመለኮት ኃይል መከፋፈል", "ሐ) የአካላት የተለያየ ዘመን መኖር", "መ) የባሕርይ መለያየት"], ans: 0 },
+            { q: "4. የሞዳልዝም (Modalism / Sabellianism) ኑፋቄ ስህተት ምንድን ነው?", opts: ["ሀ) አንድ አምላክ እንደየሁኔታው በአሶ ሦስት መልክ ይገለጣል ማለት", "ለ) ሦስት አማልክት አሉ ብሎ ማመን", "ሐ) ወልድ ከመለኮት ያነሰ ነው ማለት", "መ) የክርስቶስን ሰው መሆን መካድ"], ans: 0 },
+            { q: "5. የሱቦርዲኔሺያኒዝም (Subordinationism) ክህደት ዋና ትኩረት ምንድን ነው?", opts: ["ሀ) ወልድና መንፈስ ቅዱስ ከአብ ያንሳሉ / ተገዢዎች ናቸው የሚል", "ለ) ሦስት እኩል አካላት አሉ የሚል", "ሐ) እግዚአብሔር አካል የለውም የሚል", "መ) ማርያም አምላክን ወለደች የሚል"], ans: 0 },
+            { q: "6. ትሪቴይዝም (Tritheism) ከእውነት የሚለየው በምን ምክንያት ነው?", opts: ["ሀ) ሦስት የተለያየ መለኮትና ፈጣሪ አለው ስለሚል", "ለ) ሦስት አካላትን ስለሚያምን", "ሐ) የአብን አባትነት ስለሚክድ", "መ) የክርስቶስን ትንሣኤ ስለሚቃወም"], ans: 0 },
+            { q: "7. የዘላለም ትውልድ (Eternal Generation) ሲባል ምን ማለት ነው?", opts: ["ሀ) ወልድ ከዘላለም ከአብ መወለዱ (ያለ ጊዜ ወሰን)", "ለ) ክርስቶስ በቤተልሔም መወለዱ", "ሐ) ፍጥረታት በስድስት ቀን መፈጠራቸው", "መ) የመንፈስ ቅዱስ በዓለ ሃምሳ መውረድ"], ans: 0 },
+            { q: "8. ጌታ ኢየሱስ ክርስቶስ 'አብ ከእኔ ይበልጣል' ያለው በየትኛው ሁኔታ ላይ ተመስርቶ ነው?", opts: ["ሀ) በሰውነቱ / በባሪያ መልክ መወሰዱ", "ለ) በመለኮታዊ ባሕርዩ", "ሐ) በዘላለማዊ ክብሩ", "መ) ከዘላለም ጀምሮ ባለው ቦታው"], ans: 0 },
+            { q: "9. የሥላሴን ምስጢር ለማስረዳት የሚጠቀሙባቸው ፍልስፍናዊ አናሎግዎች (ምሳሌዎች) ወሰን ምንድን ነው?", opts: ["ሀ) ፍጹም መለኮታዊውን እውነት ሙሉ በሙሉ አይሸፍኑትም", "ለ) ፍጹም ሐሰተኛ ናቸው", "ሐ) የሂሳብ ቀመርን ያሟላሉ", "መ) የትኛውንም ምስጢር ያስወግዳሉ"], ans: 0 },
+            { q: "10. በሥጋዌ እና በሥላሴ መካከል ያለው ግንኙነት ትክክለኛ መግለጫ የቱ ነው?", opts: ["ሀ) ሦስቱ አካላት በፈጠራቸው ሥራ በአንድነት ይሰራሉ፤ ነገር ግን ሰው የመሆን ሥራ ለወልድ ብቻ የተወሰነ ነው", "ለ) ሦስቱም አካላት በአንድነት ሰው ሆነዋል", "ሐ) አብ ብቻ ነው ሰው የሆነው", "መ) ሥጋዌ ከሥላሴ ጋር ግንኙነት የለውም"], ans: 0 },
+            { q: "11. 'ትራንስ-ራሽናል' (Trans-rational) ማለት ከምን ጋር ተመሳሳይ ነው?", opts: ["ሀ) ከሰብአዊ አዕምሮ አቅም በላይ የሆነ (ምስጢር)", "ለ) ምክንያታዊ ያልሆነ (Irrational)", "ሐ) በሳይንስ የተረጋገጠ", "መ) በሂሳብ ሊሰላ የሚችል"], ans: 0 },
+            { q: "12. የመለኮታዊ ባሕርይ ተፈጥሮ ከሚከተሉት ውስጥ የቱ ነው?", opts: ["ሀ) የማይከፈል (Indivisible) እና ሁሉን የሞላ", "ለ) የሚከፈልና የሚለወጥ", "ሐ) በቦታ የተወሰነ", "መ) በጊዜ የተገደበ"], ans: 0 },
+            { q: "13. የአብ, የወልድ እና የመንፈስ ቅዱስ ግንኙነት ዘላለማዊ ሕብረት (Eternal Communion) የሚባለው ለምንድን ነው?", opts: ["ሀ) ከዘላለም እስከ ዘላለም በፍቅርና በፈቃድ አንድ ስለሆኑ", "ለ) አልፎ አልፎ ስለሚገናኙ", "ሐ) በዓለም ፍጻሜ ስለሚለያዩ", "መ) በሰው ፈቃድ ስለሚመሩ"], ans: 0 },
+            { q: "14. ተቺዎች የሥላሴን ትምህርት ሲቃወሙ የሚጠቀሙበት መሠረታዊ መሣሪያ ምንድን ነው?", opts: ["ሀ) ክላሲካል መደብ ሎጂክ እና የቁጥር ስሌት", "ለ) መጽሐፍ ቅዱስ", "ሐ) የቅዱሳን ሊቃውንት ድርሳናት", "መ) የጸሎተ ሃይማኖት ቀኖና"], ans: 0 },
+            { q: "15. 'ኢኮኖሚክ ትሪኒቲ' (Economic Trinity) ሲባል ምን ለማለት ተፈልጎ ነው?", opts: ["ሀ) በመዳን ታሪክ ውስጥ አላማቸውን ለመፈጸም ያደረጉት መገለጥ", "ለ) የገንዘብ አስተዳደር በቤተክርስቲያን", "ሐ) የመለኮት ኢኮኖሚያዊ እቅድ", "መ) የፍጡራን አቅርቦት"], ans: 0 },
+            { q: "16. 'ኢማኔንት ትሪኒቲ' (Immanent Trinity) የሚባለው የቱ ነው?", opts: ["ሀ) ከጊዜ ውጭ በዘላለም ውስጥ ያላቸው የውስጥ ባሕርያዊ ሕብረት", "ለ) በምድር ላይ የፈጸሙት ተአምር", "ሐ) ከሰዎች ጋር ያደረጉት ግንኙነት", "መ) በቤተክርስቲያን የሚደረግ ሥርዓት"], ans: 0 },
+            { q: "17. የሰቤልዮስ ኑፋቄ በአሁኑ ዘመን ከሚገኙት የትኛው ቡድን አስተምህሮ ጋር ይመሳሰላል?", opts: ["ሀ) ኦንሊ ጂሰስ (Oneness Pentecostalism)", "ለ) የይሖዋ ምስክሮች", "ሐ) መሐመዳውያን", "መ) ቡድሂስቶች"], ans: 0 },
+            { q: "18. አርዮስ የወልድን አምላክነት ሲክድ የጠቀሰው ዋና ምክንያት ምን ነበር?", opts: ["ሀ) 'መዳረሻ አለው' (ነበረ መቼ ያልነበረበት ጊዜ አለ) በሚል ፍጡር ነው አላቸው", "ለ) መጽሐፍ ቅዱስ ስለሌለ", "ሐ) ተአምራት ስላልሠራ", "መ) በናዝሬት ስለተወለደ"], ans: 0 },
+            { q: "19. የኒቂያ ጉባኤ (318ቱ ሊቃውንት) አርዮስን ያወገዙበት ዋና ምክንያት ምንድን ነው?", opts: ["ሀ) ወልድ ከአብ ጋር እኩል ባሕርይ (ኮ-ኤተርናል) መሆኑን በማረጋገጥ", "ለ) አዳዲስ መጻሕፍትን ለማጽደቅ", "ሐ) የቄሳርን ትእዛዝ ለመፈጸም", "መ) የቋንቋ ልዩነትን ለማስወገድ"], ans: 0 },
+            { q: "20. 'አብ ራሱ ወልድ ነው' የሚለው አባባል የትኛውን ስህተት ያንጸባርቃል?", opts: ["ሀ) ፓትሪፓሺያኒዝም (Patripassianism)", "ለ) ኦርቶዶክሳዊ እምነት", "ሐ) ትክክለኛ ሎጂክ", "መ) ሐዋርያዊ ትምህርት"], ans: 0 },
+            { q: "21. የቅዱስ አትናቴዎስ ትግል ስለ ሥላሴ ምን የሚል ነበር?", opts: ["ሀ) ወልድ ከመለኮት ጋር ፍጹም አንድ ባሕርይ (ኦሞውሲዮስ) አለው", "ለ) ወልድ ፍጡር ነው", "ሐ) ሦስት አማልክት አሉ", "መ) መለኮት ሊታወቅ አይችልም"], ans: 0 },
+            { q: "22. የሥላሴን አንድነት ስንናገር የምንጠቀመው ቃል ማነው?", opts: ["ሀ) መለኮት / ባሕርይ", "ለ) አካል", "ሐ) ስም", "መ) ግለሰብ"], ans: 0 },
+            { q: "23. የሥላሴን ሦስትነት ስንናገር የምንጠቀመው ቃል ማነው?", opts: ["ሀ) አካል / ግርማ", "ለ) ባሕርይ", "ሐ) መለኮት", "መ) ተፈጥሮ"], ans: 0 },
+            { q: "24. የፍጡራን አዕምሮ መለኮታዊውን ምስጢር ሲመረምር ማስታወስ ያለበት መሠረታዊ ገደብ ምንድን ነው?", opts: ["ሀ) ፈጣሪ ፈጣሪ ነው፣ ፍጡር ፍጡር ነው (የዕውቀት ወሰን)", "ለ) ሁሉንም ነገር በሳይንስ መረዳት ይቻላል", "ሐ) ሎጂክ ከእግዚአብሔር በላይ ነው", "መ) ምንም ገደብ የለም"], ans: 0 },
+            { q: "25. 'መንፈስ ቅዱስ ከአብ ይወጣል' የሚለው ትምህርት ምንን ያሳያል?", opts: ["ሀ) የመንፈስ ቅዱስን ሰራፂነት (Procession)", "ለ) የመንፈስ ቅዱስ ፍጡርነት", "ሐ) የመንፈስ ቅዱስ ከወልድ ጋር ማነስ", "መ) የባሕርይ መከፈል"], ans: 0 },
+            { q: "26. የክርስትና አፖሎጅቲክስ በሥላሴ ዙሪያ ለሚነሱ ጥያቄዎች የሚሰጠው ምላሽ መሠረት ምንድን ነው?", opts: ["ሀ) ከመጽሐፍ ቅዱስ እና ከቀደምት ሊቃውንት ድርሳናት የተገኘ ሎጂካዊ ትንታኔ", "ለ) የፍልስፍና ክህደት", "ሐ) ዝምታ", "መ) የኃይል ክርክር"], ans: 0 },
+            { q: "27. 'አብ ቃሉን ወለደ' ሲባል የትኛውን አካል ነው ቃል የተባለው?", opts: ["ሀ) ወልድ", "ለ) መንፈስ ቅዱስ", "ሐ) ሁለቱም", "መ) አብ ራሱ"], ans: 0 },
+            { q: "28. የሥላሴ ምስጢር በዕብራይስጥ መጽሐፍ ቅዱስ ውስጥ (ለምሳሌ ዘፍ 1፡26 'ሰውን በምስላችን እንፍጠር') እንዴት ይንጸባረቃል?", opts: ["ሀ) በብዙ ቁጥር (በአንደኛ መደብ ብዙ) መገለጹ", "ለ) በአንድ ቁጥር ብቻ", "ሐ) በነብዩ ኢሳይያስ ትንቢት", "መ) በግሪክ ኛ ቋንቋ ብቻ"], ans: 0 },
+            { q: "29. የሥላሴን ሦስትነት የሚቃወሙ አካላት የሚጠቀሙበት ዋናው የፍልስፍና መከራከሪያ ምንድን ነው?", opts: ["ሀ) ፍጹም ሞኖቴኢዝም (Strict Monotheism) እና የቁጥር አንድነት", "ለ) የሳይንስ ፈጠራ", "ሐ) የሞራል ብልሹነት", "መ) የታሪክ እውነት ማጣት"], ans: 0 },
+            { q: "30. አማኝ ክርስቲያን የሥላሴን ምስጢር አውቆ በሕይወቱ መጸናት የሚችለው እንዴት ነው?", opts: ["ሀ) በእውነተኛ እምነት፣ በመንፈሳዊ ሕይወት እና በምሥጢራቱ ተሳትፎ", "ለ) በሂሳብ ስሌት ብቻ", "ሐ) በዓለማዊ ፍልስፍና", "መ) በክርክር ብቻ"], ans: 0 }
+        ];
+
+        let currentActiveModule = 1;
+
+        function startModule1Exam() {
+            currentActiveModule = 1;
+            openExamPortal();
+        }
+
+        function startModule2Exam() {
+            currentActiveModule = 2;
+            openExamPortal();
+        }
+
+        function openExamPortal() {
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
+            document.getElementById('view-exam-container').classList.add('active');
+            window.scrollTo(0, 0);
+            renderQuizState();
+        }
+
+        function renderQuizState() {
+            const state = currentActiveModule === 1 ? appState.mod1ExamDay : appState.mod2ExamDay;
+            const timerExpiry = currentActiveModule === 1 ? appState.mod1TimerExpiry : appState.mod2TimerExpiry;
+            const titleEl = document.getElementById('exam-title');
+            titleEl.innerText = `ፈተና (Module ${currentActiveModule} Exam) - ቀን ${state + 1}/3`;
+
+            const lockBox = document.getElementById('lock-info-box');
+            const quizArea = document.getElementById('quiz-area');
+            const researchSec = document.getElementById('research-section');
+
+            if (state >= 3) {
+                lockBox.classList.add('hidden');
+                quizArea.classList.add('hidden');
+                researchSec.classList.remove('hidden');
+                titleEl.innerText = `የምርምር ፕሮጀክት ፒዲኤፍ ማስገቢያ (Module ${currentActiveModule} Research)`;
                 return;
             }
 
-            appState.quizDay++;
-            appState.lastQuizTime = Date.now();
-            saveState();
+            researchSec.classList.add('hidden');
 
-            closeSlideView('view-quiz');
-            if(appState.quizDay >= 3) {
-                openSlideView('view-research');
+            const now = new Date().getTime();
+            if (timerExpiry && now < timerExpiry) {
+                lockBox.classList.remove('hidden');
+                quizArea.classList.add('hidden');
+                updateTimerDisplay();
+                return;
             } else {
-                openSlideView('view-timer');
-                startTimer(appState.lastQuizTime + ONE_DAY_MS);
+                lockBox.classList.add('hidden');
+                quizArea.classList.remove('hidden');
+                loadQuizBatch(state);
             }
         }
 
-        /* Timer Logic */
-        function startTimer(endTime) {
-            clearInterval(timerInterval);
-            const display = document.getElementById('countdown-display');
+        let currentBatchAnswers = {};
+
+        function loadQuizBatch(dayIndex) {
+            const container = document.getElementById('question-container');
+            container.innerHTML = '';
+            currentBatchAnswers = {};
+
+            const startIndex = dayIndex * 10;
+            const questions = currentActiveModule === 1 ? questionsMod1 : questionsMod2;
+            const batch = questions.slice(startIndex, startIndex + 10);
+
+            batch.forEach((item, idx) => {
+                const qNum = startIndex + idx;
+                let html = `<div class="mb-4 bg-black bg-opacity-40 p-4 rounded border border-gray-800">
+                    <p class="text-white font-semibold mb-2">${item.q}</p>
+                    <div class="grid grid-cols-1 gap-2">`;
+                
+                item.opts.forEach((opt, optIdx) => {
+                    html += `<label class="flex items-center space-x-3 text-gray-300 text-sm cursor-pointer p-2 rounded hover:bg-yellow-900 hover:bg-opacity-20 transition">
+                        <input type="radio" name="q_${qNum}" value="${optIdx}" class="text-cinematic-yellow focus:ring-yellow-500">
+                        <span>${opt}</span>
+                    </label>`;
+                });
+                html += `</div></div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function submitQuizBatch() {
+            const state = currentActiveModule === 1 ? appState.mod1ExamDay : appState.mod2ExamDay;
+            const startIndex = state * 10;
             
-            timerInterval = setInterval(() => {
-                const now = Date.now();
-                const diff = endTime - now;
-                if(diff <= 0) {
-                    clearInterval(timerInterval);
-                    closeSlideView('view-timer');
-                    startQuizLogic();
+            for (let i = 0; i < 10; i++) {
+                const radios = document.getElementsByName(`q_${startIndex + i}`);
+                let answered = false;
+                for (let r of radios) {
+                    if (r.checked) answered = true;
+                }
+                if (!answered) {
+                    alert(`እባክዎ ሁሉንም 10 ጥያቄዎች ይመልሱ! (ጥያቄ ${i+1})`);
                     return;
                 }
-                const h = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
-                const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
-                const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
-                display.innerText = `${h}:${m}:${s}`;
-            }, 1000);
+            }
+
+            const nextDay = state + 1;
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            const expiryTime = new Date().getTime() + twentyFourHours;
+
+            if (currentActiveModule === 1) {
+                appState.mod1ExamDay = nextDay;
+                appState.mod1TimerExpiry = nextDay < 3 ? expiryTime : 0;
+            } else {
+                appState.mod2ExamDay = nextDay;
+                appState.mod2TimerExpiry = nextDay < 3 ? expiryTime : 0;
+            }
+            saveState();
+            renderQuizState();
+            alert(`የቀን ${state + 1} ፈተና በተሳካ ሁኔታ ተጠናቋል!`);
+        }
+
+        function checkTimerTick() {
+            const timerExpiry = currentActiveModule === 1 ? appState.mod1TimerExpiry : appState.mod2TimerExpiry;
+            if (timerExpiry) {
+                const now = new Date().getTime();
+                if (now >= timerExpiry) {
+                    if (currentActiveModule === 1) appState.mod1TimerExpiry = 0;
+                    else appState.mod2TimerExpiry = 0;
+                    saveState();
+                    renderQuizState();
+                } else {
+                    updateTimerDisplay();
+                }
+            }
+        }
+
+        function updateTimerDisplay() {
+            const timerExpiry = currentActiveModule === 1 ? appState.mod1TimerExpiry : appState.mod2TimerExpiry;
+            const now = new Date().getTime();
+            const diff = timerExpiry - now;
+            if (diff <= 0) return;
+
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            const timerEl = document.getElementById('countdown-timer');
+            if (timerEl) {
+                timerEl.innerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
         }
 
         function bypassTimer() {
-            appState.lastQuizTime = 0;
+            if (currentActiveModule === 1) {
+                appState.mod1TimerExpiry = 0;
+            } else {
+                appState.mod2TimerExpiry = 0;
+            }
             saveState();
-            clearInterval(timerInterval);
-            closeSlideView('view-timer');
-            startQuizLogic();
+            renderQuizState();
         }
 
-        /* Research Submission Logic */
-        function handleFileSelect(e) {
-            const file = e.target.files[0];
-            const btn = document.getElementById('submit-research-btn');
-            if(file && file.name.endsWith('.pdf')) {
-                document.getElementById('file-name-display').innerText = file.name;
-                document.getElementById('file-name-display').classList.add('text-[#FFD700]');
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.classList.add('hover:bg-yellow-400');
+        function submitResearchPDF() {
+            const fileInput = document.getElementById('pdf-file-input');
+            if (fileInput.files.length === 0) {
+                alert("እባክዎ የምርምር ፒዲኤፍ (PDF) ፋይል ይምረጡ።");
+                return;
+            }
+
+            if (currentActiveModule === 1) {
+                appState.mod1Completed = true;
+                saveState();
+                alert("እንኳን ደስ አለዎት! ሞጁል 1ን ሙሉ በሙሉ አጠናቀዋል። አሁን 'Logical problem of trinity' (ሞጁል 2) ተከፍቷል!");
+                switchTab('main-course');
+            } else {
+                appState.mod2Completed = true;
+                saveState();
+                alert("እንኳን ደስ አለዎት! ሞጁል 2ን ሙሉ በሙሉ አጠናቀዋል። አሁን 'Basic logic study' (ሞጁል 3) ተከፍቷል!");
+                switchTab('main-course');
             }
         }
-
-        function submitResearch() {
-            appState.mod3Unlocked = true;
-            saveState();
-            
-            closeSlideView('view-research');
-            switchTab('main');
-            updateUI();
-        }
-
-        // Init
-        updateUI();
-
     </script>
 </body>
 </html>
